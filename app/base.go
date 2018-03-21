@@ -2,7 +2,7 @@ package app
 
 import (
 	"bytes"
-	goerr "errors"
+	// goerr "errors"
 	"fmt"
 	"math/big"
 
@@ -124,6 +124,7 @@ func (app *BaseApp) CheckTx(txBytes []byte) abci.ResponseCheckTx {
 	tx, err := sdk.LoadTx(txBytes)
 	if err != nil {
 		// try to decode with ethereum
+		/*
 		tx, err := decodeTx(txBytes)
 		if err != nil {
 			app.logger.Debug("CheckTx: Received invalid transaction", "tx", tx, "err", err)
@@ -138,6 +139,7 @@ func (app *BaseApp) CheckTx(txBytes []byte) abci.ResponseCheckTx {
 		if resp.IsErr() {
 			return errors.CheckResult(goerr.New(resp.Error()))
 		}
+		*/
 
 		return sdk.NewCheck(21000, "").ToABCI()
 	}
