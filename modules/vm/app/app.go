@@ -137,8 +137,9 @@ func (app *EthermintApplication) InitChain(req abciTypes.RequestInitChain) (
 // #stable - 0.4.0
 func (app *EthermintApplication) CheckTx(tx *ethTypes.Transaction) abciTypes.ResponseCheckTx {
 	app.logger.Debug("CheckTx: Received valid transaction", "tx", tx) // nolint: errcheck
+	return abciTypes.ResponseCheckTx{Code: abciTypes.CodeTypeOK}
 
-	return app.validateTx(tx)
+	// return app.validateTx(tx)
 }
 
 // DeliverTx executes a transaction against the latest state
