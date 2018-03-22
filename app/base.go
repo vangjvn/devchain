@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"math/big"
 	"time"
-	"encoding/hex"
+	// "encoding/hex"
 
 	sdk "github.com/cosmos/cosmos-sdk"
 	"github.com/cosmos/cosmos-sdk/errors"
@@ -71,9 +71,10 @@ func NewBaseApp(store *StoreApp, ethApp *ethapp.EthermintApplication, handler sd
 }
 
 // DeliverTx - ABCI - dispatches to the handler
-func (app *BaseApp) DeliverTx(otxBytes []byte) abci.ResponseDeliverTx {
+func (app *BaseApp) DeliverTx(txBytes []byte) abci.ResponseDeliverTx {
 	app.logger.Debug("DeliverTx ", time.Now())
-	txBytes, _ := hex.DecodeString("F86780850430E2340083015F9094BAB665EDE4E15F2DA118E3D861B42815BFCE10790180820101A0D9FA7B377501FADADC382A4D53F519C66207E6310070F9295A9EBCE3A1BD20B3A034FE549B7F75F90D12D2BDA05CD9986ABBF7310DCC34C76ACC77D8210DEA7E06")
+	// txBytes, _ := hex.DecodeString("F86780850430E2340083015F9094BAB665EDE4E15F2DA118E3D861B42815BFCE10790180820101A0D9FA7B377501FADADC382A4D53F519C66207E6310070F9295A9EBCE3A1BD20B3A034FE549B7F75F90D12D2BDA05CD9986ABBF7310DCC34C76ACC77D8210DEA7E06")
+	return abci.ResponseDeliverTx{Code: abci.CodeTypeOK}
 
 	tx, err := sdk.LoadTx(txBytes)
 	if err != nil {
@@ -129,9 +130,10 @@ func (app *BaseApp) DeliverTx(otxBytes []byte) abci.ResponseDeliverTx {
 }
 
 // CheckTx - ABCI - dispatches to the handler
-func (app *BaseApp) CheckTx(otxBytes []byte) abci.ResponseCheckTx {
+func (app *BaseApp) CheckTx(txBytes []byte) abci.ResponseCheckTx {
 	app.logger.Debug("CheckTx ", time.Now())
-	txBytes, _ := hex.DecodeString("F86780850430E2340083015F9094BAB665EDE4E15F2DA118E3D861B42815BFCE10790180820101A0D9FA7B377501FADADC382A4D53F519C66207E6310070F9295A9EBCE3A1BD20B3A034FE549B7F75F90D12D2BDA05CD9986ABBF7310DCC34C76ACC77D8210DEA7E06")
+	// txBytes, _ := hex.DecodeString("F86780850430E2340083015F9094BAB665EDE4E15F2DA118E3D861B42815BFCE10790180820101A0D9FA7B377501FADADC382A4D53F519C66207E6310070F9295A9EBCE3A1BD20B3A034FE549B7F75F90D12D2BDA05CD9986ABBF7310DCC34C76ACC77D8210DEA7E06")
+	return sdk.NewCheck(21000, "").ToABCI()
 
 	tx, err := sdk.LoadTx(txBytes)
 	if err != nil {
