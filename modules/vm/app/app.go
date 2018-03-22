@@ -297,6 +297,7 @@ func (app *EthermintApplication) validateTx(tx *ethTypes.Transaction) abciTypes.
 	}
 
 	// Check if nonce is not strictly increasing
+	/*
 	nonce := currentState.GetNonce(from)
 	if nonce != tx.Nonce() {
 		return abciTypes.ResponseCheckTx{
@@ -305,6 +306,7 @@ func (app *EthermintApplication) validateTx(tx *ethTypes.Transaction) abciTypes.
 				"Nonce not strictly increasing. Expected %d Got %d",
 				nonce, tx.Nonce())}
 	}
+	*/
 
 	// Transactor should have enough funds to cover the costs
 	currentBalance := currentState.GetBalance(from)
