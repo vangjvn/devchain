@@ -68,8 +68,7 @@ func NewBaseApp(store *StoreApp, ethApp *ethapp.EthermintApplication, handler sd
 
 // DeliverTx - ABCI - dispatches to the handler
 func (app *BaseApp) DeliverTx(txBytes []byte) abci.ResponseDeliverTx {
-	fmt.Println("DeliverTx")
-	startNano := time.Now().UnixNano()
+	fmt.Println("DeliverTx ", time.Now())
 
 	tx, err := sdk.LoadTx(txBytes)
 	if err != nil {
@@ -91,9 +90,6 @@ func (app *BaseApp) DeliverTx(txBytes []byte) abci.ResponseDeliverTx {
 		//resp, err := app.client.DeliverTxSync(txBytes)
 		resp := app.EthApp.DeliverTx(tx)
 		fmt.Printf("ethermint DeliverTx response: %v\n", resp)
-
-		elapse := time.Now().UnixNano() - startNano
-		fmt.Println("DeliverTx Elapsed: ", elapse)
 
 		return resp
 	}
@@ -124,8 +120,7 @@ func (app *BaseApp) DeliverTx(txBytes []byte) abci.ResponseDeliverTx {
 
 // CheckTx - ABCI - dispatches to the handler
 func (app *BaseApp) CheckTx(txBytes []byte) abci.ResponseCheckTx {
-	fmt.Println("CheckTx")
-	startNano := time.Now().UnixNano()
+	fmt.Println("CheckTx ", time.Now())
 
 	tx, err := sdk.LoadTx(txBytes)
 	if err != nil {
@@ -144,9 +139,6 @@ func (app *BaseApp) CheckTx(txBytes []byte) abci.ResponseCheckTx {
 		if resp.IsErr() {
 			return errors.CheckResult(goerr.New(resp.Error()))
 		}
-
-		elapse := time.Now().UnixNano() - startNano
-		fmt.Println("CheckTx Elapsed: ", elapse)
 
 		return sdk.NewCheck(21000, "").ToABCI()
 	}
@@ -179,8 +171,7 @@ func (app *BaseApp) CheckTx(txBytes []byte) abci.ResponseCheckTx {
 
 // BeginBlock - ABCI
 func (app *BaseApp) BeginBlock(beginBlock abci.RequestBeginBlock) (res abci.ResponseBeginBlock) {
-	fmt.Println("BeginBlock")
-	startNano := time.Now().UnixNano()
+	fmt.Println("BeginBlock ", time.Now())
 
 	//resp, _ := app.client.BeginBlockSync(beginBlock)
 	resp := app.EthApp.BeginBlock(beginBlock)
@@ -191,16 +182,12 @@ func (app *BaseApp) BeginBlock(beginBlock abci.RequestBeginBlock) (res abci.Resp
 		utils.ValidatorPubKeys = append(utils.ValidatorPubKeys, evidence.GetPubKey())
 	}
 
-	elapse := time.Now().UnixNano() - startNano
-	fmt.Println("BeginBlock Elapsed: ", elapse)
-
 	return abci.ResponseBeginBlock{}
 }
 
 // EndBlock - ABCI - triggers Tick actions
 func (app *BaseApp) EndBlock(endBlock abci.RequestEndBlock) (res abci.ResponseEndBlock) {
-	fmt.Println("EndBlock")
-	startNano := time.Now().UnixNano()
+	fmt.Println("EndBlock ", time.Now())
 
 	//resp, _ := app.client.EndBlockSync(endBlock)
 	resp := app.EthApp.EndBlock(endBlock)
@@ -232,17 +219,13 @@ func (app *BaseApp) EndBlock(endBlock abci.RequestEndBlock) (res abci.ResponseEn
 			From: stake.DefaultHoldAccount.Address, To: []byte(k), Amount: awardAmount})
 	}
 
-	elapse := time.Now().UnixNano() - startNano
-	fmt.Println("EndBlock Elapsed: ", elapse)
-
 	// todo send StateChangeQueue to VM
 
 	return app.StoreApp.EndBlock(endBlock)
 }
 
 func (app *BaseApp) Commit() (res abci.ResponseCommit) {
-	fmt.Println("Commit")
-	startNano := time.Now().UnixNano()
+	fmt.Println("Commit ", time.Now())
 
 	//resp, err := app.client.CommitSync()
 	//if err != nil {
@@ -254,9 +237,6 @@ func (app *BaseApp) Commit() (res abci.ResponseCommit) {
 	fmt.Printf("ethermint Commit response, %v, hash: %v\n", resp, hash.String())
 
 	app.StoreApp.Commit()
-
-	elapse := time.Now().UnixNano() - startNano
-	fmt.Println("Commit Elapsed: ", elapse)
 
 	return resp
 }
