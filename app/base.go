@@ -2,7 +2,7 @@ package app
 
 import (
 	"bytes"
-	goerr "errors"
+	// goerr "errors"
 	"fmt"
 	"math/big"
 	"time"
@@ -144,12 +144,14 @@ func (app *BaseApp) CheckTx(otxBytes []byte) abci.ResponseCheckTx {
 		}
 
 		//resp, err := app.client.CheckTxSync(txBytes)
+		/*
 		resp := app.EthApp.CheckTx(tx)
 		fmt.Printf("ethermint CheckTx response: %v\n", resp)
 
 		if resp.IsErr() {
 			return errors.CheckResult(goerr.New(resp.Error()))
 		}
+		*/
 
 		app.checkedTx[tx.Hash()] = tx
 
