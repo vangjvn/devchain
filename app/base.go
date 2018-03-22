@@ -72,7 +72,7 @@ func NewBaseApp(store *StoreApp, ethApp *ethapp.EthermintApplication, handler sd
 
 // DeliverTx - ABCI - dispatches to the handler
 func (app *BaseApp) DeliverTx(otxBytes []byte) abci.ResponseDeliverTx {
-	fmt.Println("DeliverTx ", time.Now())
+	app.logger.Debug("DeliverTx ", time.Now())
 	txBytes, _ := hex.DecodeString("F86780850430E2340083015F9094BAB665EDE4E15F2DA118E3D861B42815BFCE10790180820101A0D9FA7B377501FADADC382A4D53F519C66207E6310070F9295A9EBCE3A1BD20B3A034FE549B7F75F90D12D2BDA05CD9986ABBF7310DCC34C76ACC77D8210DEA7E06")
 
 	tx, err := sdk.LoadTx(txBytes)
@@ -99,7 +99,7 @@ func (app *BaseApp) DeliverTx(otxBytes []byte) abci.ResponseDeliverTx {
 
 		//resp, err := app.client.DeliverTxSync(txBytes)
 		resp := app.EthApp.DeliverTx(tx)
-		fmt.Printf("ethermint DeliverTx response: %v\n", resp)
+		app.logger.Debug("ethermint DeliverTx response: %v\n", resp)
 
 		return resp
 	}
@@ -130,7 +130,7 @@ func (app *BaseApp) DeliverTx(otxBytes []byte) abci.ResponseDeliverTx {
 
 // CheckTx - ABCI - dispatches to the handler
 func (app *BaseApp) CheckTx(otxBytes []byte) abci.ResponseCheckTx {
-	fmt.Println("CheckTx ", time.Now())
+	app.logger.Debug("CheckTx ", time.Now())
 	txBytes, _ := hex.DecodeString("F86780850430E2340083015F9094BAB665EDE4E15F2DA118E3D861B42815BFCE10790180820101A0D9FA7B377501FADADC382A4D53F519C66207E6310070F9295A9EBCE3A1BD20B3A034FE549B7F75F90D12D2BDA05CD9986ABBF7310DCC34C76ACC77D8210DEA7E06")
 
 	tx, err := sdk.LoadTx(txBytes)
@@ -145,7 +145,7 @@ func (app *BaseApp) CheckTx(otxBytes []byte) abci.ResponseCheckTx {
 
 		//resp, err := app.client.CheckTxSync(txBytes)
 		resp := app.EthApp.CheckTx(tx)
-		fmt.Printf("ethermint CheckTx response: %v\n", resp)
+		app.logger.Debug("ethermint CheckTx response: %v\n", resp)
 
 		if resp.IsErr() {
 			return errors.CheckResult(goerr.New(resp.Error()))
@@ -184,11 +184,11 @@ func (app *BaseApp) CheckTx(otxBytes []byte) abci.ResponseCheckTx {
 
 // BeginBlock - ABCI
 func (app *BaseApp) BeginBlock(beginBlock abci.RequestBeginBlock) (res abci.ResponseBeginBlock) {
-	fmt.Println("BeginBlock ", time.Now())
+	app.logger.Debug("BeginBlock ", time.Now())
 
 	//resp, _ := app.client.BeginBlockSync(beginBlock)
 	resp := app.EthApp.BeginBlock(beginBlock)
-	fmt.Printf("ethermint BeginBlock response: %v\n", resp)
+	app.logger.Debug("ethermint BeginBlock response: %v\n", resp)
 
 	evidences := beginBlock.ByzantineValidators
 	for _, evidence := range evidences {
@@ -200,11 +200,11 @@ func (app *BaseApp) BeginBlock(beginBlock abci.RequestBeginBlock) (res abci.Resp
 
 // EndBlock - ABCI - triggers Tick actions
 func (app *BaseApp) EndBlock(endBlock abci.RequestEndBlock) (res abci.ResponseEndBlock) {
-	fmt.Println("EndBlock ", time.Now())
+	app.logger.Debug("EndBlock ", time.Now())
 
 	//resp, _ := app.client.EndBlockSync(endBlock)
 	resp := app.EthApp.EndBlock(endBlock)
-	fmt.Printf("ethermint EndBlock response: %v\n", resp)
+	app.logger.Debug("ethermint EndBlock response: %v\n", resp)
 
 	// execute tick if present
 	if app.clock != nil {
@@ -238,7 +238,7 @@ func (app *BaseApp) EndBlock(endBlock abci.RequestEndBlock) (res abci.ResponseEn
 }
 
 func (app *BaseApp) Commit() (res abci.ResponseCommit) {
-	fmt.Println("Commit ", time.Now())
+	app.logger.Debug("Commit ", time.Now())
 
 	//resp, err := app.client.CommitSync()
 	//if err != nil {
@@ -248,7 +248,7 @@ func (app *BaseApp) Commit() (res abci.ResponseCommit) {
 
 	resp := app.EthApp.Commit()
 	var hash = resp.Data
-	fmt.Printf("ethermint Commit response, %v, hash: %v\n", resp, hash.String())
+	app.logger.Debug("ethermint Commit response, %v, hash: %v\n", resp, hash.String())
 
 	app.StoreApp.Commit()
 
