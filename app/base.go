@@ -139,6 +139,7 @@ func (app *BaseApp) CheckTx(txBytes []byte) abci.ResponseCheckTx {
 
 	if sec == app.sec {
 		if app.txc > 1000 {
+			fmt.Println("<>-----------")
 			return abci.ResponseCheckTx{Code: abci.CodeTypeOK}
 		}
 		app.txc += 1
