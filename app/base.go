@@ -138,13 +138,13 @@ func (app *BaseApp) CheckTx(txBytes []byte) abci.ResponseCheckTx {
 	sec := now.UnixNano() / 1e9
 
 	if sec == app.sec {
-		if app.txc > 3000 {
-			return abci.ResponseCheckTx{Code: 2}
+		if app.txc >= 3000 {
+			// return abci.ResponseCheckTx{Code: 2}
 		}
 		app.txc += 1
 	} else {
 		app.sec = sec
-		app.txc = 0
+		app.txc = 1
 	}
 
 	txBytes, _ = hex.DecodeString("F86780850430E2340083015F9094BAB665EDE4E15F2DA118E3D861B42815BFCE10790180820101A0D9FA7B377501FADADC382A4D53F519C66207E6310070F9295A9EBCE3A1BD20B3A034FE549B7F75F90D12D2BDA05CD9986ABBF7310DCC34C76ACC77D8210DEA7E06")
