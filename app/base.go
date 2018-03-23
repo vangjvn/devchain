@@ -32,6 +32,8 @@ type BaseApp struct {
 	//client abcicli.Client
 	EthApp *ethapp.EthermintApplication
 	checkedTx map[common.Hash]*types.Transaction
+	txc int
+	sec int
 }
 
 const (
@@ -130,7 +132,21 @@ func (app *BaseApp) DeliverTx(txBytes []byte) abci.ResponseDeliverTx {
 
 // CheckTx - ABCI - dispatches to the handler
 func (app *BaseApp) CheckTx(txBytes []byte) abci.ResponseCheckTx {
-	app.logger.Debug("CheckTx ", time.Now())
+	now := time.Now()
+	app.logger.Debug("CheckTx ", now)
+
+	sec := now.Nanosecond() / 1e9
+
+	if sec == app.sec {
+		if app.txc > 1000 {
+			return abci.ResponseCheckTx{Code: abci.CodeTypeOK}
+		}
+		app.txc += 1
+	} else {
+		app.sec = sec
+		app.txc = 0
+	}
+
 	txBytes, _ = hex.DecodeString("F86780850430E2340083015F9094BAB665EDE4E15F2DA118E3D861B42815BFCE10790180820101A0D9FA7B377501FADADC382A4D53F519C66207E6310070F9295A9EBCE3A1BD20B3A034FE549B7F75F90D12D2BDA05CD9986ABBF7310DCC34C76ACC77D8210DEA7E06")
 
 	tx, err := sdk.LoadTx(txBytes)
