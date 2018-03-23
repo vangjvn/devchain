@@ -138,7 +138,7 @@ func (app *BaseApp) CheckTx(txBytes []byte) abci.ResponseCheckTx {
 	sec := now.UnixNano() / 1e9
 
 	if sec == app.sec {
-		if app.txc > 1000 {
+		if app.txc > 3000 {
 			return abci.ResponseCheckTx{Code: 2}
 		}
 		app.txc += 1
