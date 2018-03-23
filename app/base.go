@@ -33,7 +33,7 @@ type BaseApp struct {
 	EthApp *ethapp.EthermintApplication
 	checkedTx map[common.Hash]*types.Transaction
 	txc int
-	sec int
+	sec int64
 }
 
 const (
@@ -135,7 +135,7 @@ func (app *BaseApp) CheckTx(txBytes []byte) abci.ResponseCheckTx {
 	now := time.Now()
 	app.logger.Debug("CheckTx ", now)
 
-	sec := now.Nanosecond() / 1e9
+	sec := now.UnixNano() / 1e9
 
 	if sec == app.sec {
 		if app.txc > 1000 {
