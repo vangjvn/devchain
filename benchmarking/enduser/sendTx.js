@@ -15,10 +15,11 @@ console.log(
   `Will send ${totalTxs} transactions and wait for ${blockTimeout} blocks`
 )
 
-let gasPrice = web3.cmt.gasPrice
+let gasPrice = web3.toBigNumber(web3.toWei("5", "gwei"))
 let cost = utils.calculateTransactionsPrice(gasPrice, value, totalTxs)
 let balance = web3.cmt.getBalance(fromAddress)
 let endBalance = balance.minus(cost)
+console.log("balance after transfer will be: ", endBalance.toString())
 
 if (cost.comparedTo(balance) > 0) {
   let error =
@@ -57,22 +58,29 @@ utils.sendTransactions(web3, transactions, (err, ms) => {
     return
   }
 
-  utils.waitProcessedInterval(web3, fromAddress, endBalance, (err, endDate) => {
-    if (err) {
-      console.error("Couldn't process transactions in blocks")
-      console.error(err)
-      return
+  utils.waitProcessedInterval(
+    web3,
+    fromAddress,
+    endBalance,
+    initialNonce,
+    totalTxs,
+    (err, endDate) => {
+      if (err) {
+        console.error("Couldn't process transactions in blocks")
+        console.error(err)
+        return
+      }
+
+      let sent = transactions.length
+      let processed = web3.cmt.getTransactionCount(fromAddress) - initialNonce
+      let timePassed = (endDate - start) / 1000
+      let perSecond = processed / timePassed
+
+      console.log("end time: ", endDate)
+      console.log(
+        `Processed ${processed} of ${sent} transactions ` +
+          `from one account in ${timePassed}s, ${perSecond} tx/s`
+      )
     }
-
-    let sent = transactions.length
-    let processed = web3.cmt.getTransactionCount(fromAddress) - initialNonce
-    let timePassed = (endDate - start) / 1000
-    let perSecond = processed / timePassed
-
-    console.log("end time: ", endDate)
-    console.log(
-      `Processed ${processed} of ${sent} transactions ` +
-        `from one account in ${timePassed}s, ${perSecond} tx/s`
-    )
-  })
+  )
 })

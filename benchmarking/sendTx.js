@@ -19,11 +19,12 @@ console.log(
 // let privKey = wallet.getPrivateKey()
 let dest = config.get("address")
 let value = 1
-let gasPrice = web3.cmt.gasPrice
+let gasPrice = web3.toBigNumber(web3.toWei("5", "gwei"))
 
 let cost = utils.calculateTransactionsPrice(gasPrice, value, totalTxs)
 let balance = web3.cmt.getBalance(walletAddress)
 let endBalance = balance.minus(cost)
+console.log("balance after transfer will be: ", endBalance.toString())
 
 if (cost.comparedTo(balance) > 0) {
   let error =
@@ -65,6 +66,8 @@ utils.sendTransactions(web3, transactions, (err, ms) => {
     web3,
     walletAddress,
     endBalance,
+    initialNonce,
+    totalTxs,
     (err, endDate) => {
       if (err) {
         console.error("Couldn't process transactions in blocks")
