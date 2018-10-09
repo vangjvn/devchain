@@ -52,11 +52,9 @@ func startCmd() func(cmd *cobra.Command, args []string) error {
 	return func(cmd *cobra.Command, args []string) error {
 		rootDir := viper.GetString(cli.HomeFlag)
 		// start travis as sub process
-		/*
-			if !viper.GetBool(SubFlag) {
-				return startSubProcess(rootDir)
-			}
-		*/
+		if !viper.GetBool(SubFlag) {
+			return startSubProcess(rootDir)
+		}
 		if err := dbm.InitSqliter(path.Join(rootDir, "data", utils.DB_FILE_NAME)); err != nil {
 			return err
 		}

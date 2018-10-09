@@ -104,7 +104,8 @@ func (app *BaseApp) Info(req abci.RequestInfo) abci.ResponseInfo {
 	rp := governance.GetRetiringProposal(version.Version)
 	if rp != nil && rp.Result == "Approved" {
 		if rp.ExpireBlockHeight <= ethInfoRes.LastBlockHeight {
-			server.StopFlag <- true
+			//server.StopFlag <- true
+			governance.KillProgramCmd(nil)
 		} else if rp.ExpireBlockHeight == ethInfoRes.LastBlockHeight+1 {
 			utils.RetiringProposalId = rp.Id
 		} else {

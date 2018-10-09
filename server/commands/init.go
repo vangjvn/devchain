@@ -50,7 +50,7 @@ func GetInitCmd() *cobra.Command {
 func initFiles(cmd *cobra.Command, args []string) error {
 	initTendermint()
 	initTravisDb()
-	// initTravisCmd()
+ 	initTravisCmd()
 	return initEthermint()
 }
 
