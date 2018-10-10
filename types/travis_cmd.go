@@ -84,10 +84,10 @@ func (c *TravisCmd) Start() error {
 	go func() {
 		err = cmd.Wait()
 		if err != nil {
-			fmt.Printf("cmd.Run() failed with %s\n", err)
+			log.Println(fmt.Sprintf("cmd.Run() failed with %s", err))
 		}
 		if errStdout != nil || errStderr != nil {
-			fmt.Printf("failed to capture stdout or stderr\n")
+			log.Println(fmt.Sprintf("failed to capture stdout or stderr"))
 		}
 	}()
 	return nil
@@ -97,15 +97,17 @@ func (c *TravisCmd) Start() error {
 func (c *TravisCmd) Stop() error {
 	pro, err := os.FindProcess(c.cmd.Process.Pid)
 	if err != nil {
-		fmt.Printf("can not find rpocess:%d\n", c.cmd.Process.Pid)
+		log.Println(fmt.Sprintf("can not find rpocess:%d\n", c.cmd.Process.Pid))
 		return err
 	}
 	err = pro.Signal(syscall.SIGINT)
 	if err != nil {
-		fmt.Printf("failed to terminate sub-process: %s\n", c.cmd.Path)
+		log.Println(fmt.Sprintf("failed to terminate sub-process: %s\n", c.cmd.Path))
 		return err
 	}
-	fmt.Printf("terminate sub-process sucessfully: %s\n", c.cmd.Path)
+
+
+	log.Println(fmt.Sprintf("terminate sub-process sucessfully: %s\n", c.cmd.Path))
 	c.started = false
 	c.startTime = time.Time{}
 	c.cmd = nil
