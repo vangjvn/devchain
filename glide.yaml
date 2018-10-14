@@ -20,9 +20,9 @@ import:
 - package: github.com/tendermint/iavl
   version: ~0.9.2
 - package: github.com/tendermint/tendermint
-#  version: 54c1af40c300adfa4ce57260f77cc624d672f748
-  repo: https://github.com/CyberMiles/tendermint.git
-  version: 48b626c2942a4706ce1a82bf554fa96e3aa1444b
+  version: 9e940b95ad4d27efab60d0d49278db5acb2a3b7e
+#  repo: https://github.com/CyberMiles/tendermint.git
+#  version: 48b626c2942a4706ce1a82bf554fa96e3aa1444b
   subpackages:
   - config
   - node
@@ -41,6 +41,16 @@ import:
   version: v1.6.0
 - package: github.com/tendermint/go-amino
   version: ~0.10.1
+- package: github.com/gogo/protobuf
+  #version: v1.1.1
+  version: 636bf0302bc95575d69441b25a2603156ffdddf1
+  subpackages:
+  - gogoproto
+  - jsonpb
+  - proto
+  - protoc-gen-gogo/descriptor
+  - sortkeys
+  - types
 testImport:
 - package: github.com/stretchr/testify
   subpackages:

@@ -183,7 +183,7 @@ func (app *BaseApp) CheckTx(txBytes []byte) abci.ResponseCheckTx {
 
 // BeginBlock - ABCI
 func (app *BaseApp) BeginBlock(req abci.RequestBeginBlock) (res abci.ResponseBeginBlock) {
-	app.blockTime = req.GetHeader().Time
+	app.blockTime = req.GetHeader().Time.Unix()
 	app.EthApp.BeginBlock(req)
 	app.PresentValidators = app.PresentValidators[:0]
 	app.AbsentValidators = stake.LoadAbsentValidators(app.Append())
@@ -203,7 +203,7 @@ func (app *BaseApp) BeginBlock(req abci.RequestBeginBlock) (res abci.ResponseBeg
 	// init end
 
 	// handle the absent validators
-	for _, sv := range req.Validators {
+	for _, sv := range req.LastCommitInfo.Validators {
 		var pk ed25519.PubKeyEd25519
 		copy(pk[:], sv.Validator.PubKey.Data)
 

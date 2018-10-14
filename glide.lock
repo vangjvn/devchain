@@ -127,7 +127,7 @@ imports:
 - name: github.com/go-stack/stack
   version: 259ab82a6cad3992b4e21ff5cac294ccb06474bc
 - name: github.com/gogo/protobuf
-  version: 1adfc126b41513cc696b209667c8656ea7aac67c
+  version: 636bf0302bc95575d69441b25a2603156ffdddf1
   subpackages:
   - gogoproto
   - jsonpb
@@ -294,8 +294,7 @@ imports:
 - name: github.com/tendermint/iavl
   version: 35f66e53d9b01e83b30de68b931f54b2477a94c9
 - name: github.com/tendermint/tendermint
-  repo: https://github.com/CyberMiles/tendermint.git
-  version: 48b626c2942a4706ce1a82bf554fa96e3aa1444b
+  version: 9e940b95ad4d27efab60d0d49278db5acb2a3b7e
   subpackages:
   - abci/client
   - abci/example/code
