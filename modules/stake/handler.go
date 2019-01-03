@@ -300,8 +300,13 @@ func (c check) updateCandidacy(tx TxUpdateCandidacy, gasFee sdk.Int) error {
 			return err
 		}
 
-		candidate = GetCandidateByPubKey(pk)
-		if candidate != nil {
+		// current state of candidate must be validator or backup validator
+		if candidate.State == "Candidate" {
+			return ErrUnsupportedOperation()
+		}
+
+		newCandidate := GetCandidateByPubKey(pk)
+		if newCandidate != nil {
 			return ErrPubKeyAleadyDeclared()
 		}
 	}
