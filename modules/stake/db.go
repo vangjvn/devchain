@@ -3,11 +3,13 @@ package stake
 import (
 	"database/sql"
 	"fmt"
+	"log"
 
 	"github.com/CyberMiles/travis/sdk"
 	"github.com/CyberMiles/travis/sdk/dbm"
 	"github.com/CyberMiles/travis/types"
 	"github.com/ethereum/go-ethereum/common"
+	sqlite3 "github.com/mattn/go-sqlite3"
 )
 
 var (
@@ -25,7 +27,7 @@ func ResetDeliverSqlTx() {
 func getDb() *sql.DB {
 	db, err := dbm.Sqliter.GetDB()
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 	return db
 }
@@ -44,7 +46,7 @@ func getSqlTxWrapper() *SqlTxWrapper {
 		db := getDb()
 		tx, err := db.Begin()
 		if err != nil {
-			panic(err)
+			log.Panic(err)
 		}
 		wrapper.tx = tx
 		wrapper.withBlock = false
@@ -55,7 +57,7 @@ func getSqlTxWrapper() *SqlTxWrapper {
 func (wrapper *SqlTxWrapper) Commit() {
 	if !wrapper.withBlock {
 		if err := wrapper.tx.Commit(); err != nil {
-			panic(err)
+			log.Panic(err)
 		}
 	}
 }
@@ -63,7 +65,7 @@ func (wrapper *SqlTxWrapper) Commit() {
 func (wrapper *SqlTxWrapper) Rollback() {
 	if !wrapper.withBlock {
 		if err := wrapper.tx.Rollback(); err != nil {
-			panic(err)
+			log.Panic(err)
 		}
 	}
 }
@@ -152,7 +154,7 @@ func getCandidatesInternal(cond map[string]interface{}) (candidates Candidates) 
 	clause, params := buildQueryClause(cond)
 	rows, err := txWrapper.tx.Query("select id, pub_key, address, shares, voting_power, pending_voting_power, max_shares, comp_rate, name, website, location, profile, email, verified, active, block_height, rank, state, num_of_delegators, created_at from candidates"+clause, params...)
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 	defer rows.Close()
 	candidates = composeCandidateResults(rows)
@@ -165,7 +167,7 @@ func composeCandidateResults(rows *sql.Rows) (candidates Candidates) {
 		var id, votingPower, pendingVotingPower, blockHeight, rank, numOfDelegators, createdAt int64
 		err := rows.Scan(&id, &pubKey, &address, &shares, &votingPower, &pendingVotingPower, &maxShares, &compRate, &name, &website, &location, &profile, &email, &verified, &active, &blockHeight, &rank, &state, &numOfDelegators, &createdAt)
 		if err != nil {
-			panic(err)
+			log.Panic(err)
 		}
 		pk, _ := types.GetPubKey(pubKey)
 		description := Description{
@@ -198,7 +200,18 @@ func composeCandidateResults(rows *sql.Rows) (candidates Candidates) {
 	}
 
 	if err := rows.Err(); err != nil {
-		panic(err)
+		switch err.(type) {
+			case sqlite3.Error: {
+				e := err.(sqlite3.Error)
+				if e.Code == 5 {
+					return Candidates{}
+				} else {
+					log.Panic(err)
+				}
+			}
+			default:
+				log.Panic(err)
+		}
 	}
 	return
 }
@@ -209,7 +222,7 @@ func SaveCandidate(candidate *Candidate) {
 
 	stmt, err := txWrapper.tx.Prepare("insert into candidates(pub_key, address, shares, voting_power, pending_voting_power, max_shares, comp_rate, name, website, location, profile, email, verified, active, hash, block_height, rank, state, num_of_delegators, created_at) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 
 	defer stmt.Close()
@@ -237,7 +250,7 @@ func SaveCandidate(candidate *Candidate) {
 		candidate.CreatedAt,
 	)
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 }
 
@@ -247,7 +260,7 @@ func updateCandidate(candidate *Candidate) {
 
 	stmt, err := txWrapper.tx.Prepare("update candidates set address = ?, shares = ?, voting_power = ?, pending_voting_power = ?, max_shares = ?, comp_rate = ?, name =?, website = ?, location = ?, profile = ?, email = ?, verified = ?, active = ?, hash = ?, rank = ?, state = ?, num_of_delegators = ?, pub_key = ? where id = ?")
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 
 	defer stmt.Close()
@@ -274,7 +287,7 @@ func updateCandidate(candidate *Candidate) {
 		candidate.Id,
 	)
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 }
 
@@ -284,14 +297,14 @@ func cleanCandidates() {
 
 	stmt, err := txWrapper.tx.Prepare("update candidates set active = ? where shares = ?")
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 
 	defer stmt.Close()
 
 	_, err = stmt.Exec("N", "0")
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 }
 
@@ -302,7 +315,7 @@ func GetCandidatesTotalShares() (res sdk.Int) {
 
 	rows, err := txWrapper.tx.Query("select shares from candidates where active = 'Y' and state in ('Validator', 'Backup Validator')")
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 	defer rows.Close()
 
@@ -310,12 +323,12 @@ func GetCandidatesTotalShares() (res sdk.Int) {
 		var shares string
 		err = rows.Scan(&shares)
 		if err != nil {
-			panic(err)
+			log.Panic(err)
 		}
 
 		s, ok := sdk.NewIntFromString(shares)
 		if !ok {
-			panic(err)
+			log.Panic(err)
 		}
 		res = res.Add(s)
 	}
@@ -329,14 +342,14 @@ func SaveDelegation(d *Delegation) {
 
 	stmt, err := txWrapper.tx.Prepare("insert into delegations(delegator_address, candidate_id, delegate_amount, award_amount, withdraw_amount, pending_withdraw_amount, slash_amount, comp_rate, hash, voting_power, state, block_height, average_staking_date, created_at) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 
 	defer stmt.Close()
 
 	_, err = stmt.Exec(d.DelegatorAddress.String(), d.CandidateId, d.DelegateAmount, d.AwardAmount, d.WithdrawAmount, d.PendingWithdrawAmount, d.SlashAmount, d.CompRate.String(), common.Bytes2Hex(d.Hash()), d.VotingPower, d.State, d.BlockHeight, d.AverageStakingDate, d.CreatedAt)
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 }
 
@@ -346,14 +359,14 @@ func RemoveDelegation(id int64) {
 
 	stmt, err := txWrapper.tx.Prepare("update delegations set state = ? where id = ?")
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 
 	defer stmt.Close()
 
 	_, err = stmt.Exec("N", id)
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 }
 
@@ -362,12 +375,12 @@ func UpdateDelegation(d *Delegation) {
 	defer txWrapper.Commit()
 	stmt, err := txWrapper.tx.Prepare("update delegations set delegator_address = ?, delegate_amount = ?, award_amount =?, withdraw_amount = ?, pending_withdraw_amount = ?, slash_amount = ?, comp_rate = ?, hash = ?, voting_power = ?, state = ?, average_staking_date = ? where id = ?")
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 	defer stmt.Close()
 	_, err = stmt.Exec(d.DelegatorAddress.String(), d.DelegateAmount, d.AwardAmount, d.WithdrawAmount, d.PendingWithdrawAmount, d.SlashAmount, d.CompRate.String(), common.Bytes2Hex(d.Hash()), d.VotingPower, d.State, d.AverageStakingDate, d.Id)
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 }
 
@@ -407,14 +420,14 @@ func GetNumOfDelegatorsByCandidate(candidateId int64) int64 {
 
 	stmt, err := txWrapper.tx.Prepare("select count(1) from delegations where candidate_id = ? and state = ?")
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 	defer stmt.Close()
 
 	var res int64
 	err = stmt.QueryRow(candidateId, "Y").Scan(&res)
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 
 	return res
@@ -427,7 +440,7 @@ func getDelegationsInternal(cond map[string]interface{}) (delegations []*Delegat
 	clause, params := buildQueryClause(cond)
 	rows, err := txWrapper.tx.Query("select id, delegator_address, candidate_id, delegate_amount, award_amount, withdraw_amount, pending_withdraw_amount, slash_amount, comp_rate, voting_power, state, block_height, average_staking_date, created_at from delegations"+clause, params...)
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 	defer rows.Close()
 
@@ -441,7 +454,7 @@ func composeDelegationResults(rows *sql.Rows) (delegations []*Delegation) {
 		var id, votingPower, blockHeight, averageStakingDate, candidateId, createdAt int64
 		err := rows.Scan(&id, &delegatorAddress, &candidateId, &delegateAmount, &awardAmount, &withdrawAmount, &pendingWithdrawAmount, &slashAmount, &compRate, &votingPower, &state, &blockHeight, &averageStakingDate, &createdAt)
 		if err != nil {
-			panic(err)
+			log.Panic(err)
 		}
 
 		c, _ := sdk.NewRatFromString(compRate)
@@ -465,7 +478,7 @@ func composeDelegationResults(rows *sql.Rows) (delegations []*Delegation) {
 	}
 
 	if err := rows.Err(); err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 	return
 }
@@ -476,7 +489,7 @@ func saveDelegateHistory(h *DelegateHistory) {
 
 	stmt, err := txWrapper.tx.Prepare("insert into delegate_history(delegator_address, candidate_id, amount, op_code, block_height, hash) values(?, ?, ?, ?, ?, ?)")
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 	defer stmt.Close()
 	_, err = stmt.Exec(
@@ -488,7 +501,7 @@ func saveDelegateHistory(h *DelegateHistory) {
 		common.Bytes2Hex(h.Hash()),
 	)
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 }
 
@@ -498,7 +511,7 @@ func saveSlash(slash *Slash) {
 
 	stmt, err := txWrapper.tx.Prepare("insert into slashes(candidate_id, slash_ratio, slash_amount, reason, created_at, block_height, hash) values(?, ?, ?, ?, ?, ?, ?)")
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 	defer stmt.Close()
 
@@ -512,7 +525,7 @@ func saveSlash(slash *Slash) {
 		common.Bytes2Hex(slash.Hash()),
 	)
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 }
 
@@ -522,7 +535,7 @@ func saveUnstakeRequest(req *UnstakeRequest) {
 
 	stmt, err := txWrapper.tx.Prepare("insert into unstake_requests(delegator_address, candidate_id, initiated_block_height, performed_block_height, amount, state, hash) values(?, ?, ?, ?, ?, ?, ?)")
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 	defer stmt.Close()
 
@@ -536,7 +549,7 @@ func saveUnstakeRequest(req *UnstakeRequest) {
 		common.Bytes2Hex(req.Hash()),
 	)
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 }
 
@@ -546,7 +559,7 @@ func GetUnstakeRequests(height int64) (reqs []*UnstakeRequest) {
 
 	rows, err := txWrapper.tx.Query("select id, delegator_address, candidate_id, initiated_block_height, performed_block_height, amount, state from unstake_requests where state = ? and performed_block_height <= ?", "PENDING", height)
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 	defer rows.Close()
 
@@ -560,7 +573,7 @@ func composeUnstakeRequestResults(rows *sql.Rows) (reqs []*UnstakeRequest) {
 		var id, initiatedBlockHeight, performedBlockHeight, candidateId int64
 		err := rows.Scan(&id, &delegatorAddress, &candidateId, &initiatedBlockHeight, &performedBlockHeight, &amount, &state)
 		if err != nil {
-			panic(err)
+			log.Panic(err)
 		}
 
 		req := &UnstakeRequest{
@@ -576,7 +589,7 @@ func composeUnstakeRequestResults(rows *sql.Rows) (reqs []*UnstakeRequest) {
 	}
 
 	if err := rows.Err(); err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 	return
 }
@@ -588,7 +601,7 @@ func getUnstakeRequestsInternal(cond map[string]interface{}) (reqs []*UnstakeReq
 	clause, params := buildQueryClause(cond)
 	rows, err := txWrapper.tx.Query("select id, delegator_address, candidate_id, initiated_block_height, performed_block_height, amount, state from unstake_requests"+clause, params...)
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 	defer rows.Close()
 
@@ -609,7 +622,7 @@ func updateUnstakeRequest(req *UnstakeRequest) {
 
 	stmt, err := txWrapper.tx.Prepare("update unstake_requests set delegator_address = ?, candidate_id = ?, initiated_block_height = ?, performed_block_height = ?, amount = ?, state = ?, hash=? where id = ?")
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 	defer stmt.Close()
 
@@ -624,7 +637,7 @@ func updateUnstakeRequest(req *UnstakeRequest) {
 		req.Id,
 	)
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 }
 
@@ -634,13 +647,13 @@ func SaveCandidateDailyStake(cds *CandidateDailyStake) {
 
 	stmt, err := txWrapper.tx.Prepare("insert into candidate_daily_stakes(candidate_id, amount, block_height, hash) values(?, ?, ?, ?)")
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 	defer stmt.Close()
 
 	_, err = stmt.Exec(cds.CandidateId, cds.Amount, cds.BlockHeight, common.Bytes2Hex(cds.Hash()))
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 }
 
@@ -650,13 +663,13 @@ func RemoveExpiredCandidateDailyStakes(blockHeight int64) {
 
 	stmt, err := txWrapper.tx.Prepare("delete from candidate_daily_stakes where block_height < ?")
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 	defer stmt.Close()
 
 	_, err = stmt.Exec(blockHeight)
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 }
 
@@ -666,7 +679,7 @@ func GetCandidateDailyStakeMaxValue(candidateId int64, startBlockHeight int64) (
 
 	stmt, err := txWrapper.tx.Prepare("select cast(max(amount/1e18) as integer) from candidate_daily_stakes where candidate_id = ? and block_height >= ?")
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 	defer stmt.Close()
 
@@ -685,7 +698,7 @@ func saveCandidateAccountUpdateRequest(req *CandidateAccountUpdateRequest) int64
 
 	stmt, err := txWrapper.tx.Prepare("insert into candidate_account_update_requests(candidate_id, from_address, to_address, created_block_height, accepted_block_height, state, hash) values(?, ?, ?, ?, ?, ?, ?)")
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 	defer stmt.Close()
 
@@ -699,7 +712,7 @@ func saveCandidateAccountUpdateRequest(req *CandidateAccountUpdateRequest) int64
 		common.Bytes2Hex(req.Hash()),
 	)
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 
 	lastInsertId, _ := result.LastInsertId()
@@ -732,7 +745,7 @@ func getCandidateAccountUpdateRequestInternal(cond map[string]interface{}) (reqs
 	clause, params := buildQueryClause(cond)
 	rows, err := txWrapper.tx.Query("select id, candidate_id, from_address, to_address, created_block_height, accepted_block_height, state from candidate_account_update_requests"+clause, params...)
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 	defer rows.Close()
 
@@ -762,7 +775,7 @@ func composeCandidateAccountUpdateRequestResults(rows *sql.Rows) (reqs []*Candid
 	}
 
 	if err := rows.Err(); err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 	return
 }
@@ -773,7 +786,7 @@ func updateCandidateAccountUpdateRequest(req *CandidateAccountUpdateRequest) {
 
 	stmt, err := txWrapper.tx.Prepare("update candidate_account_update_requests set accepted_block_height = ?, state = ?, hash = ? where id = ?")
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 	defer stmt.Close()
 
@@ -784,6 +797,6 @@ func updateCandidateAccountUpdateRequest(req *CandidateAccountUpdateRequest) {
 		req.Id,
 	)
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 }
