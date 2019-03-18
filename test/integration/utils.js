@@ -357,7 +357,7 @@ const calcVotingPower = (n, s, p) => {
   if (parseInt(s / 1e18) < Number(Globals.Params.min_staking_amount)) {
     return 0
   }
-
+  /*
   let s10 = 1,
     s90 = 1,
     t = 1 // simplfied.
@@ -369,6 +369,9 @@ const calcVotingPower = (n, s, p) => {
   let l = Math.log2(r2)
   let vp = Math.ceil(l * x)
   logger.debug("r1,r2,r3,r4,x,l,vp:", r1, r2, r3, r4, x, l, vp)
+  */
+  let vp = parseInt((s / 1e18) * p)
+  logger.debug("vp:", vp)
   return vp
 }
 

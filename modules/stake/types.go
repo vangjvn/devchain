@@ -14,7 +14,6 @@ import (
 	"github.com/CyberMiles/travis/utils"
 	"github.com/tendermint/tendermint/crypto/ed25519"
 	"golang.org/x/crypto/ripemd160"
-	"math"
 )
 
 //_________________________________________________________________________
@@ -454,38 +453,42 @@ func (d *Delegation) ResetVotingPower() {
 }
 
 func (d *Delegation) CalcVotingPower(sharesPercentage sdk.Rat, blockHeight int64) int64 {
-	candidate := GetCandidateById(d.CandidateId)
-	tenDaysAgoHeight := blockHeight - utils.ConvertDaysToHeight(10)
-	ninetyDaysAgoHeight := blockHeight - utils.ConvertDaysToHeight(90)
-	snum := GetCandidateDailyStakeMaxValue(candidate.Id, tenDaysAgoHeight)
-	sdenom := GetCandidateDailyStakeMaxValue(candidate.Id, ninetyDaysAgoHeight)
-	if sdenom == 0 {
-		sdenom = 1
-	}
-	s := d.Shares().Div(sdk.E18Int).MulRat(sharesPercentage).Int64()
+	/*
+		candidate := GetCandidateById(d.CandidateId)
+		tenDaysAgoHeight := blockHeight - utils.ConvertDaysToHeight(10)
+		ninetyDaysAgoHeight := blockHeight - utils.ConvertDaysToHeight(90)
+		snum := GetCandidateDailyStakeMaxValue(candidate.Id, tenDaysAgoHeight)
+		sdenom := GetCandidateDailyStakeMaxValue(candidate.Id, ninetyDaysAgoHeight)
+		if sdenom == 0 {
+			sdenom = 1
+		}
+		s := d.Shares().Div(sdk.E18Int).MulRat(sharesPercentage).Int64()
 
-	t := d.AverageStakingDate
-	if t == 0 {
-		t = 1
-	} else if t > utils.HalfYear {
-		t = utils.HalfYear
-	}
+		t := d.AverageStakingDate
+		if t == 0 {
+			t = 1
+		} else if t > utils.HalfYear {
+			t = utils.HalfYear
+		}
 
-	one := sdk.OneRat
-	r1 := sdk.NewRat(snum, sdenom)
-	r2 := sdk.NewRat(t, 180)
-	r3 := sdk.NewRat(candidate.NumOfDelegators*4, 1)
-	r4 := sdk.NewRat(s, 1)
+		one := sdk.OneRat
+		r1 := sdk.NewRat(snum, sdenom)
+		r2 := sdk.NewRat(t, 180)
+		r3 := sdk.NewRat(candidate.NumOfDelegators*4, 1)
+		r4 := sdk.NewRat(s, 1)
 
-	r1 = r1.Mul(r1)
-	r2 = r2.Add(one)
-	r3 = one.Sub(one.Quo(r3.Add(one)))
-	r3 = r3.Mul(r3)
-	x, _ := r1.Mul(r3).Mul(r4).Float64()
-	f2, _ := r2.Float64()
-	f2 = utils.RoundFloat(f2, 2)
-	l := math.Log2(f2)
-	vp := int64(math.Ceil(x * l))
+		r1 = r1.Mul(r1)
+		r2 = r2.Add(one)
+		r3 = one.Sub(one.Quo(r3.Add(one)))
+		r3 = r3.Mul(r3)
+		x, _ := r1.Mul(r3).Mul(r4).Float64()
+		f2, _ := r2.Float64()
+		f2 = utils.RoundFloat(f2, 2)
+		l := math.Log2(f2)
+		vp := int64(math.Ceil(x * l)
+	*/
+
+	vp := d.Shares().Div(sdk.E18Int).MulRat(sharesPercentage).Int64()
 	d.VotingPower = vp
 	return vp
 }

@@ -14,7 +14,7 @@ describe("Stake Test", function() {
     this.max = web3.toWei(maxAmount, "cmt")
     this.self = web3.toWei(maxAmount * self_staking_ratio, "cmt")
     this.dele1 = web3.toWei(maxAmount * 0.1, "cmt")
-    this.dele2 = web3.toWei(maxAmount * (1 - self_staking_ratio - 0.3), "cmt")
+    this.dele2 = web3.toWei(maxAmount * (1 - self_staking_ratio - 0.11), "cmt")
     this.increasedMax = web3.toWei(maxAmount * 1.5, "cmt")
     this.reducedMax = web3.toWei(maxAmount * 0.8, "cmt")
   }
@@ -26,7 +26,7 @@ describe("Stake Test", function() {
 
   before(function() {
     Utils.addFakeValidators()
-    amounts = new Amounts(2000000)
+    amounts = new Amounts(5000000)
   })
 
   after(function() {
@@ -68,7 +68,7 @@ describe("Stake Test", function() {
       Utils.expectTxFail(tx_result)
     })
 
-    describe(`Declare to be a validator with 2000000 CMTs max and ${compRate} compRate`, function() {
+    describe(`Declare to be a validator with Amounts.max CMTs max and ${compRate} compRate`, function() {
       describe("Account D does not have enough CMTs.", function() {
         before(function() {
           balance = Utils.getBalance(3)
@@ -109,7 +109,7 @@ describe("Stake Test", function() {
           balance_old = Utils.getBalance(3)
         })
 
-        it("Succeeds, the 200000 CMTs becomes D's stake after the successful declaration", function() {
+        it("Succeeds, the Amounts.self CMTs becomes D's stake after the successful declaration", function(done) {
           let payload = {
             from: Globals.Accounts[3],
             pubKey: Globals.PubKeys[3],
@@ -124,6 +124,7 @@ describe("Stake Test", function() {
           expect(balance_new.minus(balance_old).toNumber()).to.equal(
             -gasFee.plus(amounts.self).toNumber()
           )
+          Utils.waitBlocks(done, 1)
           // check deliver tx tx_result
           // let tag = tx_result.deliver_tx.tags.find(
           //   t => t.key == Globals.GasFeeKey
@@ -135,13 +136,10 @@ describe("Stake Test", function() {
           //   web3.toBigNumber(Globals.Params.declare_candidacy).toString()
           // )
         })
-        it("D is not a validator yet", function(done) {
+        it("D is not a validator yet", function() {
           tx_result = web3.cmt.stake.validator.query(Globals.Accounts[3], 0)
-          // backup validator has voting power now
+          expect(tx_result.data.state).to.be.eq("Backup Validator")
           expect(tx_result.data.voting_power).to.be.above(0)
-          // expect(tx_result.data.tendermint_voting_power).to.eq(1)
-          expect(tx_result.data.state).to.not.eq("Validator")
-          Utils.waitBlocks(done, 1)
         })
         it("5 validators on tendermint", function(done) {
           Utils.getTMValidators((err, res) => {
@@ -195,7 +193,7 @@ describe("Stake Test", function() {
           .minus(amounts.self)
           .toNumber()
       ).to.gte(0)
-      expect(tx_result.data.state).to.not.eq("Validator")
+      expect(tx_result.data.state).to.be.eq("Backup Validator")
       delegation_after = Utils.getDelegation(3, 3)
     })
   })
@@ -215,7 +213,6 @@ describe("Stake Test", function() {
         expect(tx_result.data.active).to.be.eq("N")
         expect(tx_result.data.state).to.be.eq("Candidate")
         expect(tx_result.data.voting_power).to.be.eq(0)
-        // expect(tx_result.data.tendermint_voting_power).to.be.eq(0)
       })
       it("no award", function() {
         let awardInfos = web3.cmt.stake.validator.queryAwardInfos()
@@ -237,7 +234,6 @@ describe("Stake Test", function() {
         expect(tx_result.data.active).to.be.eq("N")
         expect(tx_result.data.state).to.be.eq("Candidate")
         expect(tx_result.data.voting_power).to.be.eq(0)
-        // expect(tx_result.data.tendermint_voting_power).to.be.eq(0)
       })
       it("no award", function() {
         let awardInfos = web3.cmt.stake.validator.queryAwardInfos()
@@ -259,7 +255,6 @@ describe("Stake Test", function() {
         expect(tx_result.data.active).to.be.eq("Y")
         expect(tx_result.data.state).to.be.eq("Validator")
         expect(tx_result.data.voting_power).to.be.gt(1)
-        // expect(tx_result.data.tendermint_voting_power).to.eq(10)
       })
       it("got award", function() {
         if (Globals.TestMode == "cluster") {
@@ -284,14 +279,12 @@ describe("Stake Test", function() {
         expect(tx_result.data.active).to.be.eq("Y")
         expect(tx_result.data.state).to.be.eq("Validator")
         expect(tx_result.data.voting_power).to.be.gt(1)
-        // expect(tx_result.data.tendermint_voting_power).to.eq(10)
       })
       it("D active=Y, state=Backup Validator, vp>1, tvp=1", function() {
         tx_result = web3.cmt.stake.validator.query(Globals.Accounts[3], 0)
         expect(tx_result.data.active).to.be.eq("Y")
         expect(tx_result.data.state).to.be.eq("Backup Validator")
         expect(tx_result.data.voting_power).to.be.gt(1)
-        // expect(tx_result.data.tendermint_voting_power).to.be.eq(1)
       })
       it("C got award", function() {
         if (Globals.TestMode == "cluster") {
@@ -305,7 +298,7 @@ describe("Stake Test", function() {
   })
 
   describe("Stake Delegate", function() {
-    describe("Account B stakes 200000 CMTs for D.", function() {
+    describe("Account B stakes Amounts.dele1 CMTs for D.", function() {
       before(function() {
         // balance before
         balance_old = Utils.getBalance(1)
@@ -326,7 +319,7 @@ describe("Stake Test", function() {
         ).to.eq(Number(amounts.dele1))
       })
     })
-    describe("Account C stakes 1200000 CMTs for D.", function() {
+    describe("Account C stakes Amounts.dele2 CMTs for D.", function() {
       before(function() {
         // balance before
         balance_old = Utils.getBalance(2)
@@ -349,7 +342,6 @@ describe("Stake Test", function() {
       it("D is now a validator", function() {
         tx_result = web3.cmt.stake.validator.query(Globals.Accounts[3], 0)
         expect(tx_result.data.voting_power).to.be.above(0)
-        // expect(tx_result.data.tendermint_voting_power).to.eq(10)
         expect(tx_result.data.state).to.eq("Validator")
       })
       it("One of the genesis validators now drops off", function() {
@@ -422,23 +414,25 @@ describe("Stake Test", function() {
       let n = val_D.num_of_delegators
       vp_B = Utils.calcVotingPower(n, dele_B.shares, p)
       let diff = Math.abs(dele_B.voting_power - vp_B)
-      expect(diff).to.be.at.most(1)
+      expect(diff).to.be.at.most(2)
     })
     it("check delegator C's voting power", function() {
       let n = val_D.num_of_delegators
       vp_C = Utils.calcVotingPower(n, dele_C.shares, p)
       let diff = Math.abs(dele_C.voting_power - vp_C)
-      expect(diff).to.be.at.most(1)
+      expect(diff).to.be.at.most(2)
     })
     it("check delegator D's voting power", function() {
       let n = val_D.num_of_delegators
       vp_D = Utils.calcVotingPower(n, dele_D.shares, p)
       let diff = Math.abs(dele_D.voting_power - vp_D)
-      expect(diff).to.be.at.most(1)
+      expect(diff).to.be.at.most(2)
     })
     it("check validator D's voting power", function() {
-      let diff = Math.abs(val_D.voting_power - vp_B - vp_C - vp_D)
-      expect(diff).to.be.at.most(1)
+      let diff = Math.abs(
+        val_D.voting_power - dele_B.voting_power - dele_C.voting_power - dele_D.voting_power
+      )
+      expect(diff).to.be.eq(0)
     })
   })
 
