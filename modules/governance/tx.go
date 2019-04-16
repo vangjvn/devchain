@@ -1,7 +1,7 @@
 package governance
 
 import (
-	"github.com/CyberMiles/travis/sdk"
+	"github.com/second-state/devchain/sdk"
 	"github.com/ethereum/go-ethereum/common"
 )
 

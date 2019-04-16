@@ -4,7 +4,7 @@ package governance
 import (
 	"fmt"
 
-	"github.com/CyberMiles/travis/sdk/errors"
+	"github.com/second-state/devchain/sdk/errors"
 )
 
 var (

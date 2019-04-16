@@ -4,9 +4,9 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/CyberMiles/travis/sdk"
-	"github.com/CyberMiles/travis/sdk/dbm"
-	"github.com/CyberMiles/travis/types"
+	"github.com/second-state/devchain/sdk"
+	"github.com/second-state/devchain/sdk/dbm"
+	"github.com/second-state/devchain/types"
 	"github.com/ethereum/go-ethereum/common"
 )
 

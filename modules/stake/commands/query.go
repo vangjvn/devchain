@@ -2,7 +2,7 @@ package commands
 
 import (
 	"fmt"
-	"github.com/CyberMiles/travis/sdk/client/commands"
+	"github.com/second-state/devchain/sdk/client/commands"
 	"github.com/spf13/cobra"
 	flag "github.com/spf13/pflag"
 	"github.com/spf13/viper"

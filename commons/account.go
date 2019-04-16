@@ -2,8 +2,8 @@ package commons
 
 import (
 	"fmt"
-	"github.com/CyberMiles/travis/sdk"
-	"github.com/CyberMiles/travis/utils"
+	"github.com/second-state/devchain/sdk"
+	"github.com/second-state/devchain/utils"
 	"github.com/ethereum/go-ethereum/accounts"
 	"github.com/ethereum/go-ethereum/accounts/keystore"
 	"github.com/ethereum/go-ethereum/common"

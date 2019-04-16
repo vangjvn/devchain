@@ -2,8 +2,8 @@ package types
 
 import (
 	"encoding/json"
-	"github.com/CyberMiles/travis/sdk"
-	"github.com/CyberMiles/travis/utils"
+	"github.com/second-state/devchain/sdk"
+	"github.com/second-state/devchain/utils"
 	"github.com/pkg/errors"
 	cmn "github.com/tendermint/tendermint/libs/common"
 	"github.com/tendermint/tendermint/types"

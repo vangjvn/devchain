@@ -3,7 +3,7 @@ package dbm
 
 import (
 	"os"
-	"github.com/CyberMiles/travis/sdk/errors"
+	"github.com/second-state/devchain/sdk/errors"
 
 	_ "github.com/mattn/go-sqlite3"
 	"database/sql"

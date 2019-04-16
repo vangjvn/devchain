@@ -2,7 +2,7 @@ package data
 
 import (
 	"github.com/pkg/errors"
-	wire "github.com/CyberMiles/travis/sdk/go-wire"
+	wire "github.com/second-state/devchain/sdk/go-wire"
 )
 
 type binaryMapper struct {

@@ -3,15 +3,15 @@ package stake
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/CyberMiles/travis/sdk/state"
+	"github.com/second-state/devchain/sdk/state"
 	"sort"
 
 	"github.com/ethereum/go-ethereum/common"
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	"github.com/CyberMiles/travis/sdk"
-	"github.com/CyberMiles/travis/types"
-	"github.com/CyberMiles/travis/utils"
+	"github.com/second-state/devchain/sdk"
+	"github.com/second-state/devchain/types"
+	"github.com/second-state/devchain/utils"
 	"github.com/tendermint/tendermint/crypto/ed25519"
 	"golang.org/x/crypto/ripemd160"
 	"math"

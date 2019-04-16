@@ -20,13 +20,13 @@ import (
 	"github.com/tendermint/tendermint/libs/cli"
 	cmn "github.com/tendermint/tendermint/libs/common"
 
-	"github.com/CyberMiles/travis/app"
-	"github.com/CyberMiles/travis/modules/stake"
-	"github.com/CyberMiles/travis/sdk/dbm"
-	"github.com/CyberMiles/travis/server"
-	"github.com/CyberMiles/travis/types"
-	"github.com/CyberMiles/travis/utils"
-	"github.com/CyberMiles/travis/version"
+	"github.com/second-state/devchain/app"
+	"github.com/second-state/devchain/modules/stake"
+	"github.com/second-state/devchain/sdk/dbm"
+	"github.com/second-state/devchain/server"
+	"github.com/second-state/devchain/types"
+	"github.com/second-state/devchain/utils"
+	"github.com/second-state/devchain/version"
 )
 
 const (

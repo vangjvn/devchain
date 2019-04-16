@@ -3,10 +3,10 @@ package main
 import (
 	"github.com/spf13/cobra"
 
-	stakecmd "github.com/CyberMiles/travis/modules/stake/commands"
-	"github.com/CyberMiles/travis/sdk/client/commands"
-	"github.com/CyberMiles/travis/sdk/client/commands/query"
-	txcmd "github.com/CyberMiles/travis/sdk/client/commands/txs"
+	stakecmd "github.com/second-state/devchain/modules/stake/commands"
+	"github.com/second-state/devchain/sdk/client/commands"
+	"github.com/second-state/devchain/sdk/client/commands/query"
+	txcmd "github.com/second-state/devchain/sdk/client/commands/txs"
 )
 
 // clientCmd is the entry point for this binary

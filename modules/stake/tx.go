@@ -3,8 +3,8 @@ package stake
 import (
 	"github.com/ethereum/go-ethereum/common"
 
-	"github.com/CyberMiles/travis/sdk"
-	"github.com/CyberMiles/travis/types"
+	"github.com/second-state/devchain/sdk"
+	"github.com/second-state/devchain/types"
 )
 
 // Tx

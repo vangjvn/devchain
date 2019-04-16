@@ -13,10 +13,10 @@ import (
 	abciTypes "github.com/tendermint/tendermint/abci/types"
 	tmLog "github.com/tendermint/tendermint/libs/log"
 
-	"github.com/CyberMiles/travis/api"
-	"github.com/CyberMiles/travis/errors"
-	"github.com/CyberMiles/travis/utils"
-	emtTypes "github.com/CyberMiles/travis/vm/types"
+	"github.com/second-state/devchain/api"
+	"github.com/second-state/devchain/errors"
+	"github.com/second-state/devchain/utils"
+	emtTypes "github.com/second-state/devchain/vm/types"
 )
 
 type FromTo struct {

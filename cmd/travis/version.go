@@ -5,7 +5,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/CyberMiles/travis/version"
+	"github.com/second-state/devchain/version"
 )
 
 // versionCmd ...

@@ -4,7 +4,7 @@ import (
 	"io"
 	"time"
 
-	cmn "github.com/CyberMiles/travis/sdk/go-wire/common"
+	cmn "github.com/second-state/devchain/sdk/go-wire/common"
 )
 
 // WriteTime writes the number of nanoseconds, with millisecond resolution,

@@ -2,8 +2,8 @@ package api
 
 import (
 	"math/big"
-	"github.com/CyberMiles/travis/modules/stake"
-	"github.com/CyberMiles/travis/utils"
+	"github.com/second-state/devchain/modules/stake"
+	"github.com/second-state/devchain/utils"
 	"github.com/ethereum/go-ethereum/common"
 	um "github.com/ethereum/go-ethereum/core/vm/umbrella"
 )

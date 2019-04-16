@@ -7,7 +7,7 @@ import (
 
 	"golang.org/x/crypto/ripemd160"
 
-	cmn "github.com/CyberMiles/travis/sdk/go-wire/common"
+	cmn "github.com/second-state/devchain/sdk/go-wire/common"
 )
 
 //-------------------------------------------------------

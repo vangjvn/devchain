@@ -7,8 +7,8 @@ import (
 
 	"github.com/tendermint/tendermint/libs/cli"
 
-	"github.com/CyberMiles/travis/sdk/client/commands/auto"
-	basecmd "github.com/CyberMiles/travis/server/commands"
+	"github.com/second-state/devchain/sdk/client/commands/auto"
+	basecmd "github.com/second-state/devchain/server/commands"
 )
 
 // TravisCmd is the entry point for this binary

@@ -18,9 +18,9 @@ import (
 	rpcClient "github.com/tendermint/tendermint/rpc/client"
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
 
-	"github.com/CyberMiles/travis/vm/ethereum"
-	emtTypes "github.com/CyberMiles/travis/vm/types"
 	"github.com/ethereum/go-ethereum/params"
+	"github.com/second-state/devchain/vm/ethereum"
+	emtTypes "github.com/second-state/devchain/vm/types"
 )
 
 //----------------------------------------------------------------------

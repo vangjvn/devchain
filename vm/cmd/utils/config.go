@@ -12,8 +12,8 @@ import (
 	"github.com/ethereum/go-ethereum/node"
 	"github.com/ethereum/go-ethereum/params"
 
-	"github.com/CyberMiles/travis/api"
-	"github.com/CyberMiles/travis/vm/ethereum"
+	"github.com/second-state/devchain/api"
+	"github.com/second-state/devchain/vm/ethereum"
 )
 
 const (

@@ -1,7 +1,7 @@
 package main
 
 import (
-	basecmd "github.com/CyberMiles/travis/server/commands"
+	basecmd "github.com/second-state/devchain/server/commands"
 	"github.com/spf13/cobra"
 )
 

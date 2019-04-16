@@ -2,7 +2,7 @@ package commands
 
 import (
 	"fmt"
-	"github.com/CyberMiles/travis/utils"
+	"github.com/second-state/devchain/utils"
 	"math/big"
 
 	"github.com/spf13/cobra"
@@ -11,10 +11,10 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 
-	"github.com/CyberMiles/travis/modules/stake"
-	"github.com/CyberMiles/travis/sdk"
-	txcmd "github.com/CyberMiles/travis/sdk/client/commands/txs"
-	"github.com/CyberMiles/travis/types"
+	"github.com/second-state/devchain/modules/stake"
+	"github.com/second-state/devchain/sdk"
+	txcmd "github.com/second-state/devchain/sdk/client/commands/txs"
+	"github.com/second-state/devchain/types"
 )
 
 /*

@@ -2,7 +2,7 @@ package query
 
 import (
 	"github.com/spf13/cobra"
-	"github.com/CyberMiles/travis/sdk/client/commands"
+	"github.com/second-state/devchain/sdk/client/commands"
 )
 
 // nolint

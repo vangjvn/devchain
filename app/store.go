@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"github.com/CyberMiles/travis/utils"
+	"github.com/second-state/devchain/utils"
 	"math/big"
 	"path"
 	"path/filepath"
@@ -21,11 +21,11 @@ import (
 	tDB "github.com/tendermint/tendermint/libs/db"
 	"github.com/tendermint/tendermint/libs/log"
 
-	"github.com/CyberMiles/travis/modules/governance"
-	"github.com/CyberMiles/travis/modules/stake"
-	"github.com/CyberMiles/travis/sdk/dbm"
-	"github.com/CyberMiles/travis/sdk/errors"
-	sm "github.com/CyberMiles/travis/sdk/state"
+	"github.com/second-state/devchain/modules/governance"
+	"github.com/second-state/devchain/modules/stake"
+	"github.com/second-state/devchain/sdk/dbm"
+	"github.com/second-state/devchain/sdk/errors"
+	sm "github.com/second-state/devchain/sdk/state"
 	"github.com/tendermint/go-amino"
 )
 

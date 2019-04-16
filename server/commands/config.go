@@ -9,7 +9,7 @@ import (
 
 	"github.com/spf13/viper"
 
-	"github.com/CyberMiles/travis/utils"
+	"github.com/second-state/devchain/utils"
 	"github.com/ethereum/go-ethereum/node"
 	tmcfg "github.com/tendermint/tendermint/config"
 	cmn "github.com/tendermint/tendermint/libs/common"

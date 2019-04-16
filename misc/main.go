@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/CyberMiles/travis/misc/genesis"
+	"github.com/second-state/devchain/misc/genesis"
 )
 
 func main() {

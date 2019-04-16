@@ -23,11 +23,11 @@ import (
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
 	ttypes "github.com/tendermint/tendermint/types"
 
-	"github.com/CyberMiles/travis/modules/governance"
-	"github.com/CyberMiles/travis/modules/stake"
-	"github.com/CyberMiles/travis/sdk"
-	"github.com/CyberMiles/travis/types"
-	"github.com/CyberMiles/travis/utils"
+	"github.com/second-state/devchain/modules/governance"
+	"github.com/second-state/devchain/modules/stake"
+	"github.com/second-state/devchain/sdk"
+	"github.com/second-state/devchain/types"
+	"github.com/second-state/devchain/utils"
 )
 
 // CmtRPCService offers cmt related RPC methods

@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	data "github.com/CyberMiles/travis/sdk/go-wire/data"
+	data "github.com/second-state/devchain/sdk/go-wire/data"
 )
 
 // Key

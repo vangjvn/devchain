@@ -8,12 +8,12 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	ethstat "github.com/ethereum/go-ethereum/core/state"
 
-	"github.com/CyberMiles/travis/commons"
-	"github.com/CyberMiles/travis/sdk"
-	"github.com/CyberMiles/travis/sdk/errors"
-	"github.com/CyberMiles/travis/sdk/state"
-	"github.com/CyberMiles/travis/types"
-	"github.com/CyberMiles/travis/utils"
+	"github.com/second-state/devchain/commons"
+	"github.com/second-state/devchain/sdk"
+	"github.com/second-state/devchain/sdk/errors"
+	"github.com/second-state/devchain/sdk/state"
+	"github.com/second-state/devchain/types"
+	"github.com/second-state/devchain/utils"
 )
 
 // DelegatedProofOfStake - interface to enforce delegation stake
