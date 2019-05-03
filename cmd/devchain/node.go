@@ -8,7 +8,7 @@ import (
 // nodeCmd is the entry point for this binary
 var nodeCmd = &cobra.Command{
 	Use:   "node",
-	Short: "The Travis Network",
+	Short: "Second State DevChain",
 	Run:   func(cmd *cobra.Command, args []string) { cmd.Help() },
 }
 

@@ -14,8 +14,8 @@ import (
 // TravisCmd is the entry point for this binary
 var (
 	TravisCmd = &cobra.Command{
-		Use:   "travis",
-		Short: "The Travis Network",
+		Use:   "devchain",
+		Short: "Second State DevChain",
 		Run: func(cmd *cobra.Command, args []string) {
 			cmd.Help()
 		},
@@ -48,6 +48,6 @@ func main() {
 
 	// prepare and add flags
 	basecmd.SetUpRoot(TravisCmd)
-	executor := cli.PrepareMainCmd(TravisCmd, "CM", os.ExpandEnv("$HOME/.travis"))
+	executor := cli.PrepareMainCmd(TravisCmd, "CM", os.ExpandEnv("$HOME/.devchain"))
 	executor.Execute()
 }

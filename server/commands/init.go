@@ -216,11 +216,11 @@ func initCyberMilesDb() {
 		_, err = db.Exec(sqlStmt)
 		if err != nil {
 			//os.Remove(stakeDbPath)
-			ethUtils.Fatalf("Create travis database tables: %s", err.Error())
+			ethUtils.Fatalf("Create devchain database tables: %s", err.Error())
 		}
-		log.Info("Successfully init travis database and create tables!")
+		log.Info("Successfully init devchain database and create tables!")
 	} else {
-		log.Warn("The travis database already exists!")
+		log.Warn("The devchain database already exists!")
 	}
 }
 

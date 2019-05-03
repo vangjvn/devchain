@@ -1,10 +1,10 @@
 GOTOOLS = github.com/Masterminds/glide
-ENI_LIB?=$(HOME)/.travis/eni/lib
+ENI_LIB?=$(HOME)/.devchain/eni/lib
 CGO_LDFLAGS = -L$(ENI_LIB) -Wl,-rpath,$(ENI_LIB)
 CGO_LDFLAGS_ALLOW = "-I.*"
 UNAME = $(shell uname)
 
-all: get_vendor_deps install print_cybermiles_logo
+all: get_vendor_deps install print_logo
 
 get_vendor_deps: tools
 	glide install
@@ -13,14 +13,14 @@ get_vendor_deps: tools
 	@rm -rf vendor/github.com/ethereum/go-ethereum/vendor/gopkg.in/urfave
 
 install:
-	@echo "\n--> Installing the Travis TestNet\n"
+	@echo "\n--> Installing the Second State DevChain\n"
 ifeq ($(UNAME), Linux)
-	CGO_LDFLAGS="$(CGO_LDFLAGS)" CGO_LDFLAGS_ALLOW="$(CGO_LDFLAGS_ALLOW)" go install ./cmd/travis
+	CGO_LDFLAGS="$(CGO_LDFLAGS)" CGO_LDFLAGS_ALLOW="$(CGO_LDFLAGS_ALLOW)" go install ./cmd/devchain
 endif
 ifeq ($(UNAME), Darwin)
-	CGO_LDFLAGS_ALLOW="$(CGO_LDFLAGS_ALLOW)" go install ./cmd/travis
+	CGO_LDFLAGS_ALLOW="$(CGO_LDFLAGS_ALLOW)" go install ./cmd/devchain
 endif
-	@echo "\n\nTravis, the TestNet for CyberMiles (CMT) has successfully installed!"
+	@echo "\n\nThe Second State DevChain has successfully installed!"
 
 tools:
 	@echo "--> Installing tools"
@@ -29,10 +29,10 @@ tools:
 
 build: get_vendor_deps
 ifeq ($(UNAME), Linux)
-	CGO_LDFLAGS="$(CGO_LDFLAGS)" CGO_LDFLAGS_ALLOW="$(CGO_LDFLAGS_ALLOW)" go build -o build/travis ./cmd/travis
+	CGO_LDFLAGS="$(CGO_LDFLAGS)" CGO_LDFLAGS_ALLOW="$(CGO_LDFLAGS_ALLOW)" go build -o build/devchain ./cmd/devchain
 endif
 ifeq ($(UNAME), Darwin)
-	CGO_LDFLAGS_ALLOW="$(CGO_LDFLAGS_ALLOW)" go build -o build/travis ./cmd/travis
+	CGO_LDFLAGS_ALLOW="$(CGO_LDFLAGS_ALLOW)" go build -o build/devchain ./cmd/devchain
 endif
 
 NAME := second-state/devchain
@@ -56,6 +56,5 @@ dist:
 	docker run --rm -e "BUILD_TAG=${BUILD_TAG}" -v "${CURDIR}/scripts":/scripts --entrypoint /bin/sh -t ${NAME}:centos /scripts/dist.centos.sh
 	rm -rf build/dist && mkdir -p build/dist && mv -f scripts/*.zip build/dist/ && cd build/dist && sha256sum *.* > SHA256SUMS
 
-print_cybermiles_logo:
-	@echo "Please visit the following URL for technical testnet instructions < https://github.com/CyberMiles/travis/blob/master/README.md >.\n"
-	@echo "Visit our website < https://www.second-state.io/ >, to learn more about CyberMiles.\n"
+print_logo:
+	@echo "Visit our website < https://www.secondstate.io/ >, to learn more.\n"

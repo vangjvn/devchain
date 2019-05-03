@@ -40,7 +40,7 @@ func GetStartCmd() *cobra.Command {
 		Short: "Start this full node",
 		RunE:  startCmd(),
 	}
-	startCmd.PersistentFlags().Bool(SubFlag, false, "start travis as sub process")
+	startCmd.PersistentFlags().Bool(SubFlag, false, "start devchain as sub process")
 	return startCmd
 }
 

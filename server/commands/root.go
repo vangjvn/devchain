@@ -116,7 +116,7 @@ var (
 func setupEmtContext() error {
 	// create a new context to invoke ethermint
 	a := cli.NewApp()
-	a.Name = "travis"
+	a.Name = "devchain"
 	a.Flags = []cli.Flag{}
 	a.Flags = append(a.Flags, nodeFlags...)
 	a.Flags = append(a.Flags, rpcFlags...)
