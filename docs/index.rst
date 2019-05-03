@@ -13,3 +13,4 @@ Contents
 
    getting-started
    build
+   run

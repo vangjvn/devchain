@@ -2,6 +2,10 @@
 Getting Started
 ===============
 
+This document describes how to get started with application development on the Second State DevChain. The Second State DevChain features a powerful and easy-to-use virtual machine that can quickly get you started with smart contract and DApp development.
+
+
+
 In this document, we will discuss how to create and run a single node CyberMiles blockchain on your computer. 
 It allows you to connect and test basic features such as coin transactions, staking and unstaking for validators, 
 governance, and smart contracts.
