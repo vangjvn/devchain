@@ -25,6 +25,21 @@ Then, you can start the node.
 
   $ devchain node start
 
+Next, in a new terminal window, run the following command to connect to the local DevChain node.
+
+.. code:: bash
+
+  $ devchain attach http://localhost:8545
+  > cmt.syncing
+  {
+    catching_up: false,
+    latest_app_hash: "07FA113DF14AAC49773DD7EE2B8418740D9DD552",
+    latest_block_hash: "AF1415AF0057C52C4A1F7DC80298217A33291AEE",
+    latest_block_height: 23,
+    latest_block_time: "2019-05-03T21:41:14.581000291Z"
+  }
+
+
 Multiple nodes
 ```````````````
 
