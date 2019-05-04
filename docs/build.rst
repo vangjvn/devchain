@@ -56,6 +56,45 @@ TBD
 Docker build
 ----------------------------
 
-TBD
+First, install Docker.
+
+.. code:: bash
+
+  $ sudo apt install docker.io
+  $ sudo usermod -a -G docker $USER
+
+Log out and then log back in. Clone the repositary from Github to your build machine.
+
+.. code:: bash
+
+  $ git clone https://github.com/second-state/devchain.git
+  $ cd devchain
+
+Next, build a Docker image for the build environment.
+
+.. code:: bash
+
+  $ docker build -t second-state/devchain-build -f Dockerfile.build.ubuntu .
+  ...
+  Successfully tagged second-state/devchain-build:latest
+
+Finally, you can build the Docker image of the node.
+
+.. code:: bash
+
+  $ docker build -t second-state/devchain .
+  ...
+  Successfully tagged second-state/devchain:latest
+
+You can now see the Docker image you just built.
+
+.. code:: bash
+
+  $ docker image ls
+  REPOSITORY                    TAG                 IMAGE ID            CREATED             SIZE
+  second-state/devchain         latest              c800759441b6        5 minutes ago       246MB
+  second-state/devchain-build   latest              364c7a4700b9        4 hours ago         732MB
+  ubuntu                        16.04               a3551444fc85        7 days ago          119MB
+
 
 
