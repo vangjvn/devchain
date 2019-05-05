@@ -35,7 +35,7 @@ ifeq ($(UNAME), Darwin)
 	CGO_LDFLAGS_ALLOW="$(CGO_LDFLAGS_ALLOW)" go build -o build/devchain ./cmd/devchain
 endif
 
-NAME := second-state/devchain
+NAME := wangshishuo/devchain
 LATEST := ${NAME}:latest
 #GIT_COMMIT := $(shell git rev-parse --short=8 HEAD)
 #IMAGE := ${NAME}:${GIT_COMMIT}
