@@ -41,6 +41,8 @@ LATEST := ${NAME}:latest
 #IMAGE := ${NAME}:${GIT_COMMIT}
 
 docker_image:
+	docker build -t second-state/devchain-build -f Dockerfile.build.ubuntu .
+	docker build -t second-state/devchain-build:centos -f Dockerfile.build.centos .
 	docker build -t ${LATEST} .
 
 push_tag_image:
