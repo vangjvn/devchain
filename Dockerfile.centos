@@ -1,10 +1,10 @@
 # build docker image
-# > docker build -t second-state/devchain:centos -f Dockerfile.centos .
+# > docker build -t secondstate/devchain:centos -f Dockerfile.centos .
 # initialize:
-# > docker run --rm -v $HOME/.devchain:/devchain second-state/devchain:centos node init --home /devchain
+# > docker run --rm -v $HOME/.devchain:/devchain secondstate/devchain:centos node init --home /devchain
 # node start:
-# > docker run --rm -v $HOME/.devchain:/devchain -p 26657:26657 -p 8545:8545 second-state/devchain:centos node start --home /devchain
-FROM second-state/devchain-build:centos
+# > docker run --rm -v $HOME/.devchain:/devchain -p 26657:26657 -p 8545:8545 secondstate/devchain:centos node start --home /devchain
+FROM secondstate/devchain-build:centos
 
 # libeni
 WORKDIR /app/lib

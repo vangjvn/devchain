@@ -1,5 +1,5 @@
 # build docker image
-# > docker build -t second-state/devchain-build:centos -f Dockerfile.build.centos .
+# > docker build -t secondstate/devchain-build:centos -f Dockerfile.build.centos .
 FROM centos:7
 
 RUN yum update -y \

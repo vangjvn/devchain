@@ -1,12 +1,12 @@
 # build docker image
-# > docker build -t second-state/devchain .
+# > docker build -t secondstate/devchain .
 # initialize:
-# > docker run --rm -v $HOME/.devchain:/devchain second-state/devchain node init --home /devchain
+# > docker run --rm -v $HOME/.devchain:/devchain secondstate/devchain node init --home /devchain
 # node start:
-# > docker run --rm -v $HOME/.devchain:/devchain -p 26657:26657 -p 8545:8545 second-state/devchain node start --home /devchain
+# > docker run --rm -v $HOME/.devchain:/devchain -p 26657:26657 -p 8545:8545 secondstate/devchain node start --home /devchain
 
 # build stage
-FROM second-state/devchain-build AS build-env
+FROM secondstate/devchain-build AS build-env
 
 # libeni
 ENV LIBENI_PATH=/app/lib
@@ -22,7 +22,7 @@ ADD . .
 
 # get devchain source code from github, develop branch by default.
 # you may use a build argument to target a specific branch/tag, for example:
-# > docker build -t second-state/devchain --build-arg branch=develop .
+# > docker build -t secondstate/devchain --build-arg branch=develop .
 # comment ADD statement above and uncomment two statements below:
 # ARG branch=develop
 # RUN git clone -b $branch https://github.com/second-state/devchain.git --recursive --depth 1 .

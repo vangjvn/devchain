@@ -49,7 +49,7 @@ TBD
 Docker
 ----------------------------
 
-In the previous section, we have built a Docker image for the node software under the name `second-state/devchain`.
+In the previous section, we have built a Docker image for the node software under the name `secondstate/devchain`.
 
 Single node
 ```````````````
@@ -58,13 +58,13 @@ First, you need to initialize the configurations and settings on the node comput
 
 .. code:: bash
 
-  $ docker run --rm -v $HOME/.devchain:/devchain second-state/devchain node init --home /devchain
+  $ docker run --rm -v $HOME/.devchain:/devchain secondstate/devchain node init --home /devchain
 
 The `genesis.json` and `config.toml` files will be created under the `$HOME/.devchain/config` directory. You can make changes to those files to customize your blockchain. You may need to `sudo su -` in order to edit those files since they are created by the root user. Then, you can start the node.
 
 .. code:: bash
 
-  $ docker run --rm -v $HOME/.devchain:/devchain -p 26657:26657 -p 8545:8545 second-state/devchain node start --home /devchain
+  $ docker run --rm -v $HOME/.devchain:/devchain -p 26657:26657 -p 8545:8545 secondstate/devchain node start --home /devchain
 
 You can run the ID of the running Docker container.
 
@@ -72,7 +72,7 @@ You can run the ID of the running Docker container.
 
   $ docker container ls
   CONTAINER ID        IMAGE                   COMMAND                  CREATED             STATUS              PORTS                                                         NAMES
-  0bcd9da5bf05        second-state/devchain   "./devchain node sta…"   4 minutes ago       Up 4 minutes        0.0.0.0:8545->8545/tcp, 0.0.0.0:26657->26657/tcp, 26656/tcp   pedantic_mendeleev
+  0bcd9da5bf05        secondstate/devchain   "./devchain node sta…"   4 minutes ago       Up 4 minutes        0.0.0.0:8545->8545/tcp, 0.0.0.0:26657->26657/tcp, 26656/tcp   pedantic_mendeleev
 
 Next, log into that container.
 
