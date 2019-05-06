@@ -35,14 +35,12 @@ ifeq ($(UNAME), Darwin)
 	CGO_LDFLAGS_ALLOW="$(CGO_LDFLAGS_ALLOW)" go build -o build/devchain ./cmd/devchain
 endif
 
-NAME := wangshishuo/devchain
+NAME := secondstate/devchain
 LATEST := ${NAME}:latest
 #GIT_COMMIT := $(shell git rev-parse --short=8 HEAD)
 #IMAGE := ${NAME}:${GIT_COMMIT}
 
 docker_image:
-	docker build -t secondstate/devchain-build -f Dockerfile.build.ubuntu .
-	docker build -t secondstate/devchain-build:centos -f Dockerfile.build.centos .
 	docker build -t ${LATEST} .
 
 push_tag_image:
