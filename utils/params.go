@@ -69,7 +69,7 @@ func DefaultParams() *Params {
 		CubePubKeys:                            `[]`,
 		LowPriceTxGasLimit:                     500000, // Maximum gas limit for low-price transaction
 		LowPriceTxSlotsCap:                     100,    // Maximum number of low-price transaction slots per block
-		FoundationAddress:                      "0x7eff122b94897ea5b0e2a9abf47b86337fafebdc",
+		FoundationAddress:                      "0x0000000000000000000000000000000000000000",
 		CalStakeInterval:                       1, // calculate stake interval, default per block
 		CalVPInterval:                          1, // calculate voting power interval, default per block
 		CalAverageStakingDateInterval:          24 * 3600 / 10,
