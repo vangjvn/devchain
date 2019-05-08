@@ -19,7 +19,23 @@ First, you need to initialize the configurations and settings on the node comput
   $ devchain node init --home $HOME/.devchain
 
 The `genesis.json` and `config.toml` files will be created under the `$HOME/.devchain/config` directory. You can make changes to those files to customize your blockchain.
-Then, you can start the node.
+Then, set env variables for eni lib.
+
+.. code:: bash
+
+  $ mkdir -p $HOME/.devchain/eni/lib
+  $ cd $HOME/.devchain/eni
+
+  # Get the lib file. For centos 7 the file name is libeni-1.3.4_centos-7.tgz
+  $ wget https://github.com/second-state/libeni/releases/download/v1.3.4/libeni-1.3.4_ubuntu-16.04.tgz
+  $ tar zxvf *.tgz
+  $ cp libeni-1.3.4/lib/* lib
+  
+  # For convenience, you should also put these two lines in your .bashrc or .zshrc
+  export ENI_LIBRARY_PATH=$HOME/.devchain/eni/lib
+  export LD_LIBRARY_PATH=$HOME/.devchain/eni/lib
+
+Now you can start the node.
 
 .. code:: bash
 
@@ -60,7 +76,7 @@ First, you need to initialize the configurations and settings on the node comput
 
   $ docker run --rm -v $HOME/.devchain:/devchain secondstate/devchain node init --home /devchain
 
-The `genesis.json` and `config.toml` files will be created under the `$HOME/.devchain/config` directory. You can make changes to those files to customize your blockchain. You may need to `sudo su -` in order to edit those files since they are created by the root user. Then, you can start the node.
+The `genesis.json` and `config.toml` files will be created under the `$HOME/.devchain/config` directory. You can make changes to those files to customize your blockchain. You may need to `sudo su -` in order to edit those files since they are created by the root user. The eni lib have been built into the docker image so you don't need to worry about it. Then, you can start the node.
 
 .. code:: bash
 
