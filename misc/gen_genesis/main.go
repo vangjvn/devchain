@@ -101,35 +101,6 @@ func devAllocs() *core.GenesisAlloc {
 }
 
 func mainnetAllocs() *core.GenesisAlloc {
-	/* content of example.csv
-	0x7eff122b94897ea5b0e2a9abf47b86337fafebdc,1000000000000000000
-	0x77beb894fc9b0ed41231e51f128a347043960a9d,1000000000000000000
-	*/
-	file := "/tmp/erc20_cmt.csv"
-	f, err := os.Open(file)
-	if err != nil {
-		panic(err)
-	}
-	defer f.Close()
-
-	csvr := csv.NewReader(f)
-
-	allocs := make(core.GenesisAlloc, 10)
-	for {
-		row, err := csvr.Read()
-		if err != nil {
-			if err != io.EOF {
-				panic(err)
-			}
-			return &allocs
-		}
-
-		balance, success := big.NewInt(0).SetString(strings.Trim(row[1]," "), 10)
-		if !success {
-			panic("convert alloc balance error!")
-		}
-		//fmt.Printf("%s: %v\n", row[0], common.HexToAddress(row[0]))
-		allocs[common.HexToAddress(row[0])] = core.GenesisAccount{Balance:balance}
-	}
+	allocs := make(core.GenesisAlloc, 2)
 	return &allocs
 }
