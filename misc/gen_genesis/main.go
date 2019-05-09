@@ -11,9 +11,7 @@ import (
 	"github.com/ethereum/go-ethereum/params"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/second-state/devchain/misc/genesis"
-	"encoding/csv"
 	"os"
-	"io"
 )
 
 var (
