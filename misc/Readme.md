@@ -3,6 +3,7 @@
 we can use genesis related tools to generate genesis.josn or genesis allocates for dev and mainnet.
 
 ### 1. generate genesis.json
+
 use `gen_genesis/main.go` to generate genesis output, then we can redirect the output to somewhere you want.
 
 * development genesis output
@@ -24,9 +25,19 @@ if we omit the `--vm-genesis`, the app will use default config.
 the default config come from the genesis.go and *_alloc.go.
 
 ### 2. how to make allocates
+
 use `genesis/mkalloc.go` to make allocates, example as follow
+
+* development genesis alloc
 
 ```apple js
 $ cd genesis
 $ go run ./mkalloc.go devAllocData ./dev_genesis.json > dev_alloc.go
+```
+
+* mainnet genesis alloc
+
+```apple js
+$ cd genesis
+$ go run ./mkalloc.go mainnetAllocData ./mainnet_genesis.json > mainnet_alloc.go
 ```
