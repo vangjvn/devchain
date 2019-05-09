@@ -4,8 +4,6 @@ Getting Started
 
 This document describes how to get started with application development on the Second State DevChain. The Second State DevChain features a powerful and easy-to-use virtual machine that can quickly get you started with smart contract and DApp development.
 
-
-
 In this document, we will discuss how to create and run a single node CyberMiles blockchain on your computer. 
 It allows you to connect and test basic features such as coin transactions, staking and unstaking for validators, 
 governance, and smart contracts.
@@ -28,7 +26,7 @@ Let’s initialize the DevChain configuration and genesis settings.
 
 .. code:: bash
 
-  docker run --rm -v $HOME/.devchain:/devchain secondstate/devchain node init --home /devchain
+  docker run --rm -v $HOME/.devchain:/devchain secondstate/devchain:develop node init --home /devchain
 
 Run
 ----------------------------
@@ -37,14 +35,7 @@ Now you can start the DevChain node in docker.
 
 .. code:: bash
 
-  $ docker run --rm -v $HOME/.devchain:/devchain -p 26657:26657 -p 8545:8545 secondstate/devchain node start --home /devchain
-
-At this point, you can Ctrl-C to exit to the terminal and devchain will remain running in the background. 
-You can check the DevChain node’s logs at anytime via the following docker command.
-
-.. code:: bash
-
-  docker logs -f devchain
+  $ docker run --rm -v $HOME/.devchain:/devchain -p 26657:26657 -p 8545:8545 secondstate/devchain:develop node start --home /devchain
 
 You should see blocks like the following in the log.
 
@@ -55,6 +46,8 @@ You should see blocks like the following in the log.
 
 Connect
 ----------------------------
+
+Next, open another terminal window to interact with the running node.
 
 You can get the ID of the running Docker container.
 
