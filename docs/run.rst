@@ -18,8 +18,7 @@ First, you need to initialize the configurations and settings on the node comput
 
   $ devchain node init --home $HOME/.devchain
 
-The `genesis.json` and `config.toml` files will be created under the `$HOME/.devchain/config` directory. You can make changes to those files to customize your blockchain.
-Then, set env variables for eni lib.
+The `genesis.json` and `config.toml` files will be created under the `$HOME/.devchain/config` directory. You can make changes to those files to customize your blockchain. Then, set `env` variables for libENI.
 
 .. code:: bash
 
@@ -59,7 +58,55 @@ Next, in a new terminal window, run the following command to connect to the loca
 Multiple nodes
 ```````````````
 
-TBD
+First, you need to initialize the configurations and settings on each of the node computer. Run the following command on each machine.
+
+.. code:: bash
+
+  $ devchain node init --home $HOME/.devchain
+
+Each node has a different `$HOME/.devchain/config/priv_validator.json` key file. Note down the public key for each of them.
+
+Now, use this tool to generate a new set of `genesis.json` and `config.toml` files for the entire cluster. Enter all the public keys from the last step into the tool.
+
+Copy the generated `genesis.json` and `config.toml` files back into each node's `$HOME/.devchain/config` directory.
+
+Next, set `env` variables for libENI.
+
+.. code:: bash
+
+  $ mkdir -p $HOME/.devchain/eni/lib
+  $ cd $HOME/.devchain/eni
+
+  # Get the lib file. For centos 7 the file name is libeni-1.3.4_centos-7.tgz
+  $ wget https://github.com/second-state/libeni/releases/download/v1.3.4/libeni-1.3.4_ubuntu-16.04.tgz
+  $ tar zxvf *.tgz
+  $ cp libeni-1.3.4/lib/* lib
+  
+  # For convenience, you should also put these two lines in your .bashrc or .zshrc
+  export ENI_LIBRARY_PATH=$HOME/.devchain/eni/lib
+  export LD_LIBRARY_PATH=$HOME/.devchain/eni/lib
+
+Now you can start each node, and they will form a cluster.
+
+.. code:: bash
+
+  $ devchain node start
+
+Next, in a new terminal window, run the following command to connect to a local DevChain node in the cluster.
+
+.. code:: bash
+
+  $ devchain attach http://localhost:8545
+  > cmt.syncing
+  {
+    catching_up: false,
+    latest_app_hash: "07FA113DF14AAC49773DD7EE2B8418740D9DD552",
+    latest_block_hash: "AF1415AF0057C52C4A1F7DC80298217A33291AEE",
+    latest_block_height: 23,
+    latest_block_time: "2019-05-03T21:41:14.581000291Z"
+  }
+
+
 
 
 Docker
@@ -82,7 +129,7 @@ The `genesis.json` and `config.toml` files will be created under the `$HOME/.dev
 
   $ docker run --rm -v $HOME/.devchain:/devchain -p 26657:26657 -p 8545:8545 secondstate/devchain node start --home /devchain
 
-You can run the ID of the running Docker container.
+You can get the ID of the running Docker container.
 
 .. code:: bash
 
@@ -117,6 +164,55 @@ Finally, you can attach a console to the node to run web3 commands.
 Multiple nodes
 ```````````````
 
-TBD
+First, you need to initialize the configurations and settings on each of the node computer. Run the following command on each machine.
+
+.. code:: bash
+
+  $ docker run --rm -v $HOME/.devchain:/devchain secondstate/devchain node init --home /devchain
+
+Each node has a different `$HOME/.devchain/config/priv_validator.json` key file. Note down the public key for each of them.
+
+Now, use this tool to generate a new set of `genesis.json` and `config.toml` files for the entire cluster. Enter all the public keys from the last step into the tool.
+
+Copy the generated `genesis.json` and `config.toml` files back into each node's `$HOME/.devchain/config` directory.
+
+Now you can start each node, and they will form a cluster.
+
+.. code:: bash
+
+  $ docker run --rm -v $HOME/.devchain:/devchain -p 26657:26657 -p 8545:8545 secondstate/devchain node start --home /devchain
+
+You can get the ID of the running Docker container.
+
+.. code:: bash
+
+  $ docker container ls
+  CONTAINER ID        IMAGE                   COMMAND                  CREATED             STATUS              PORTS                                                         NAMES
+  0bcd9da5bf05        secondstate/devchain   "./devchain node sta…"   4 minutes ago       Up 4 minutes        0.0.0.0:8545->8545/tcp, 0.0.0.0:26657->26657/tcp, 26656/tcp   pedantic_mendeleev
+
+Next, log into that container on a node.
+
+.. code:: bash
+
+  $ docker exec -i -t 0bcd9da5bf05 bash
+  root@0bcd9da5bf05:/app# ls
+  devchain  devchain.sha256  lib
+
+Finally, you can attach a console to the node to run web3 commands.
+
+.. code:: bash
+
+  root@0bcd9da5bf05:/app# ./devchain attach http://localhost:8545
+  ...
+  > cmt.syncing
+  {
+    catching_up: false,
+    latest_app_hash: "C7D8AECE081DF06FFC9BF6144A50B37CA5DD8A8E",
+    latest_block_hash: "B592D63AB78C571E0FB695A052681E65F6DFE15B",
+    latest_block_height: 35,
+    latest_block_time: "2019-05-04T02:59:30.542783017Z"
+  }
+
+
 
 
