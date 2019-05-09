@@ -28,5 +28,5 @@ use `genesis/mkalloc.go` to make allocates, example as follow
 
 ```apple js
 $ cd genesis
-$ go run ./mkalloc.go devAllocData ./dev_genesis.go > dev_alloc.go
+$ go run ./mkalloc.go devAllocData ./dev_genesis.json > dev_alloc.go
 ```
