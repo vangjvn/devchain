@@ -78,7 +78,7 @@ Finally, you can attach a console to the node to run web3 commands.
 
   root@0bcd9da5bf05:/app# ./devchain attach http://localhost:8545
   ...
-> cmt.syncing
+  > cmt.syncing
   {
     catching_up: false,
     latest_app_hash: "C7D8AECE081DF06FFC9BF6144A50B37CA5DD8A8E",
