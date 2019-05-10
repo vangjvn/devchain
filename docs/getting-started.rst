@@ -26,7 +26,7 @@ Let’s initialize the DevChain configuration and genesis settings.
 
   docker run --rm -v $HOME/.devchain:/devchain secondstate/devchain:develop node init --home /devchain
 
-    Note: If you are running a cluster, you should now copy over the cluster wide `genesis.json` and `config.toml` files to the `$HOME/.devchain/config` directory. See the `this section <https://second-state-devchain.readthedocs.io/en/latest/run.html#id2>`_ for more details.
+Note: If you are running a cluster, you should now copy over the cluster wide `genesis.json` and `config.toml` files to the `$HOME/.devchain/config` directory. See the `this section <https://second-state-devchain.readthedocs.io/en/latest/run.html#id2>`_ for more details.
 
 Run
 ----------------------------
