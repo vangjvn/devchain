@@ -38,7 +38,7 @@ Now you can start the node.
 
 .. code:: bash
 
-  $ devchain node start
+  $ devchain node start --home $HOME/.devchain
 
 Next, in a new terminal window, run the following command to connect to the local DevChain node.
 
@@ -90,7 +90,7 @@ Now you can start each node, and they will form a cluster.
 
 .. code:: bash
 
-  $ devchain node start
+  $ devchain node start --home $HOME/.devchain
 
 Next, in a new terminal window, run the following command to connect to a local DevChain node in the cluster.
 
@@ -121,15 +121,15 @@ First, you need to initialize the configurations and settings on the node comput
 
 .. code:: bash
 
-  $ docker run --rm -v $HOME/.devchain:/devchain secondstate/devchain node init --home /devchain
+  $ docker run --rm -v $HOME/.devchain:/devchain secondstate/devchain:develop node init --home /devchain
 
 The `genesis.json` and `config.toml` files will be created under the `$HOME/.devchain/config` directory. You can make changes to those files to customize your blockchain. You may need to `sudo su -` in order to edit those files since they are created by the root user. The eni lib have been built into the docker image so you don't need to worry about it. Then, you can start the node.
 
 .. code:: bash
 
-  $ docker run --rm -v $HOME/.devchain:/devchain -p 26657:26657 -p 8545:8545 secondstate/devchain node start --home /devchain
+  $ docker run --rm -v $HOME/.devchain:/devchain -p 26657:26657 -p 8545:8545 secondstate/devchain:develop node start --home /devchain
 
-You can get the ID of the running Docker container.
+From a second terminal window, you can get the ID of the running Docker container.
 
 .. code:: bash
 
@@ -168,7 +168,7 @@ First, you need to initialize the configurations and settings on each of the nod
 
 .. code:: bash
 
-  $ docker run --rm -v $HOME/.devchain:/devchain secondstate/devchain node init --home /devchain
+  $ docker run --rm -v $HOME/.devchain:/devchain secondstate/devchain:develop node init --home /devchain
 
 Each node has a different `$HOME/.devchain/config/priv_validator.json` key file. Note down the public key for each of them.
 
@@ -180,9 +180,9 @@ Now you can start each node, and they will form a cluster.
 
 .. code:: bash
 
-  $ docker run --rm -v $HOME/.devchain:/devchain -p 26657:26657 -p 8545:8545 secondstate/devchain node start --home /devchain
+  $ docker run --rm -v $HOME/.devchain:/devchain -p 26657:26657 -p 8545:8545 secondstate/devchain:develop node start --home /devchain
 
-You can get the ID of the running Docker container.
+On a second terminal window on each node, you can get the ID of the running Docker container.
 
 .. code:: bash
 
