@@ -66,7 +66,11 @@ First, you need to initialize the configurations and settings on each of the nod
 
 Each node has a different `$HOME/.devchain/config/priv_validator.json` key file. Note down the public key for each of them.
 
-Now, use this tool to generate a new set of `genesis.json` and `config.toml` files for the entire cluster. Enter all the public keys from the last step into the tool.
+Now, use `this tool <https://github.com/second-state/devchain-config>`_ to generate a new set of `genesis.json` and `config.toml` files for the entire cluster. Enter all the public keys from the last step into the tool. For example, here is how to create a `genesis.json` with a custom `chain_id`, a customer `gas_price` and public keys from mutiple nodes.
+
+.. code:: bash
+
+  $ node devchain_cli.js --genesis_config=./genesis.json.template --chain_id=test --params.gas_price=0 --validators.1.pub_key=test1 --validators.1.power=101 --validators.2.pub_key=test2 --validators.1.power=102
 
 Copy the generated `genesis.json` and `config.toml` files back into each node's `$HOME/.devchain/config` directory.
 
@@ -172,7 +176,11 @@ First, you need to initialize the configurations and settings on each of the nod
 
 Each node has a different `$HOME/.devchain/config/priv_validator.json` key file. Note down the public key for each of them.
 
-Now, use this tool to generate a new set of `genesis.json` and `config.toml` files for the entire cluster. Enter all the public keys from the last step into the tool.
+Now, use `this tool <https://github.com/second-state/devchain-config>`_ to generate a new set of `genesis.json` and `config.toml` files for the entire cluster. Enter all the public keys from the last step into the tool. For example, here is how to create a `genesis.json` with a custom `chain_id`, a customer `gas_price` and public keys from mutiple nodes.
+
+.. code:: bash
+
+  $ node devchain_cli.js --genesis_config=./genesis.json.template --chain_id=test --params.gas_price=0 --validators.1.pub_key=test1 --validators.1.power=101 --validators.2.pub_key=test2 --validators.1.power=102
 
 Copy the generated `genesis.json` and `config.toml` files back into each node's `$HOME/.devchain/config` directory.
 
