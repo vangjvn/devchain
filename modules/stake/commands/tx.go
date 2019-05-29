@@ -3,8 +3,6 @@ package commands
 import (
 	"fmt"
 	"github.com/second-state/devchain/utils"
-	"math/big"
-
 	"github.com/spf13/cobra"
 	flag "github.com/spf13/pflag"
 	"github.com/spf13/viper"
@@ -12,7 +10,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 
 	"github.com/second-state/devchain/modules/stake"
-	"github.com/second-state/devchain/sdk"
 	txcmd "github.com/second-state/devchain/sdk/client/commands/txs"
 	"github.com/second-state/devchain/types"
 )
@@ -103,21 +100,6 @@ var (
 		Short: "Accept the candidate's account update request and become a candidate",
 		RunE:  cmdAcceptCandidacyAccountUpdate,
 	}
-	CmdDelegate = &cobra.Command{
-		Use:   "delegate",
-		Short: "Delegate coins to an existing validator/candidate",
-		RunE:  cmdDelegate,
-	}
-	CmdWithdraw = &cobra.Command{
-		Use:   "withdraw",
-		Short: "Withdraw coins from a validator/candidate",
-		RunE:  cmdWithdraw,
-	}
-	CmdSetCompRate = &cobra.Command{
-		Use:   "set-comprate",
-		Short: "Set the compensation rate for a certain delegator",
-		RunE:  cmdSetCompRate,
-	}
 )
 
 func init() {
@@ -176,17 +158,6 @@ func init() {
 	CmdVerifyCandidacy.Flags().AddFlagSet(fsValidatorAddress)
 	CmdVerifyCandidacy.Flags().AddFlagSet(fsVerified)
 
-	CmdDelegate.Flags().AddFlagSet(fsValidatorAddress)
-	CmdDelegate.Flags().AddFlagSet(fsAmount)
-	CmdDelegate.Flags().AddFlagSet(fsCubeBatch)
-	CmdDelegate.Flags().AddFlagSet(fsSig)
-
-	CmdWithdraw.Flags().AddFlagSet(fsValidatorAddress)
-	CmdWithdraw.Flags().AddFlagSet(fsAmount)
-
-	CmdSetCompRate.Flags().AddFlagSet(fsCompRate)
-	CmdSetCompRate.Flags().AddFlagSet(fsDelegatorAddress)
-
 	CmdUpdateCandidacyAccount.Flags().AddFlagSet(fsNewValidatorAddress)
 	CmdAcceptCandidacyAccountUpdate.Flags().AddFlagSet(fsAccountUpdateRequestId)
 }
@@ -197,18 +168,6 @@ func cmdDeclareCandidacy(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	maxAmount := viper.GetString(FlagMaxAmount)
-	v := new(big.Int)
-	_, ok := v.SetString(maxAmount, 10)
-	if !ok || v.Cmp(big.NewInt(0)) <= 0 {
-		return fmt.Errorf("max-amount must be positive interger")
-	}
-
-	c, ok := sdk.NewRatFromString(viper.GetString(FlagCompRate))
-	if !ok || c.LTE(sdk.ZeroRat) || c.GTE(sdk.OneRat) {
-		return fmt.Errorf("comp-rate must between 0 and 1")
-	}
-
 	description := stake.Description{
 		Name:     viper.GetString(FlagName),
 		Email:    viper.GetString(FlagEmail),
@@ -217,7 +176,7 @@ func cmdDeclareCandidacy(cmd *cobra.Command, args []string) error {
 		Profile:  viper.GetString(FlagProfile),
 	}
 
-	tx := stake.NewTxDeclareCandidacy(pk, maxAmount, c, description)
+	tx := stake.NewTxDeclareCandidacy(pk, description)
 	return txcmd.DoTx(tx)
 }
 
@@ -229,24 +188,6 @@ func cmdUpdateCandidacy(cmd *cobra.Command, args []string) error {
 			return err
 		}
 		pk = tmp
-	}
-
-	maxAmount := viper.GetString(FlagMaxAmount)
-	if !utils.IsBlank(maxAmount) {
-		v := new(big.Int)
-		_, ok := v.SetString(maxAmount, 10)
-		if !ok || v.Cmp(big.NewInt(0)) <= 0 {
-			return fmt.Errorf("max-amount must be positive interger")
-		}
-	}
-
-	cr := sdk.Rat{}
-	if viper.GetString(FlagCompRate) != "0" {
-		tmp, ok := sdk.NewRatFromString(viper.GetString(FlagCompRate))
-		if !ok || tmp.LTE(sdk.ZeroRat) || tmp.GTE(sdk.OneRat) {
-			return fmt.Errorf("comp-rate must between 0 and 1")
-		}
-		cr = tmp
 	}
 
 	newCandidateAddress := common.HexToAddress(viper.GetString(FlagNewCandidateAddress))
@@ -262,7 +203,7 @@ func cmdUpdateCandidacy(cmd *cobra.Command, args []string) error {
 		Profile:  viper.GetString(FlagProfile),
 	}
 
-	tx := stake.NewTxUpdateCandidacy(pk, maxAmount, cr, description)
+	tx := stake.NewTxUpdateCandidacy(pk, description)
 	return txcmd.DoTx(tx)
 }
 
@@ -289,65 +230,6 @@ func cmdActivateCandidacy(cmd *cobra.Command, args []string) error {
 
 func cmdDeactivateCandidacy(cmd *cobra.Command, args []string) error {
 	tx := stake.NewTxDeactivateCandidacy()
-	return txcmd.DoTx(tx)
-}
-
-func cmdDelegate(cmd *cobra.Command, args []string) error {
-	amount := viper.GetString(FlagAmount)
-	v := new(big.Int)
-	_, ok := v.SetString(amount, 10)
-	if !ok || v.Cmp(big.NewInt(0)) <= 0 {
-		return fmt.Errorf("amount must be positive interger")
-	}
-
-	validatorAddress := common.HexToAddress(viper.GetString(FlagCandidateAddress))
-	if validatorAddress.String() == "" {
-		return fmt.Errorf("please enter validator address using --validator-address")
-	}
-
-	cubeBatch := viper.GetString(FlagCubeBatch)
-	if cubeBatch == "" {
-		return fmt.Errorf("please enter cube's batch number using --cube-batch")
-	}
-
-	sig := viper.GetString(FlagSig)
-	if sig == "" {
-		return fmt.Errorf("please enter signature using --sig")
-	}
-
-	tx := stake.NewTxDelegate(validatorAddress, amount, cubeBatch, sig)
-	return txcmd.DoTx(tx)
-}
-
-func cmdWithdraw(cmd *cobra.Command, args []string) error {
-	validatorAddress := common.HexToAddress(viper.GetString(FlagCandidateAddress))
-	if validatorAddress.String() == "" {
-		return fmt.Errorf("please enter validator address using --validator-address")
-	}
-
-	amount := viper.GetString(FlagAmount)
-	v := new(big.Int)
-	_, ok := v.SetString(amount, 10)
-	if !ok || v.Cmp(big.NewInt(0)) <= 0 {
-		return fmt.Errorf("amount must be positive interger")
-	}
-
-	tx := stake.NewTxWithdraw(validatorAddress, amount)
-	return txcmd.DoTx(tx)
-}
-
-func cmdSetCompRate(cmd *cobra.Command, args []string) error {
-	delegatorAddress := common.HexToAddress(viper.GetString(FlagDelegatorAddress))
-	if delegatorAddress.String() == "" {
-		return fmt.Errorf("please enter delegator address using --delegator-address")
-	}
-
-	c, ok := sdk.NewRatFromString(viper.GetString(FlagCompRate))
-	if !ok || c.LTE(sdk.ZeroRat) || c.GTE(sdk.OneRat) {
-		return fmt.Errorf("comp-rate must between 0 and 1")
-	}
-
-	tx := stake.NewTxSetCompRate(delegatorAddress, c)
 	return txcmd.DoTx(tx)
 }
 

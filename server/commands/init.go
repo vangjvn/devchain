@@ -9,15 +9,14 @@ import (
 	"github.com/spf13/viper"
 
 	"database/sql"
-	"github.com/second-state/devchain/sdk"
-	"github.com/second-state/devchain/types"
-	"github.com/second-state/devchain/utils"
-	emtUtils "github.com/second-state/devchain/vm/cmd/utils"
 	ethUtils "github.com/ethereum/go-ethereum/cmd/utils"
 	"github.com/ethereum/go-ethereum/core"
 	"github.com/ethereum/go-ethereum/ethdb"
 	"github.com/ethereum/go-ethereum/log"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/second-state/devchain/types"
+	"github.com/second-state/devchain/utils"
+	emtUtils "github.com/second-state/devchain/vm/cmd/utils"
 	"github.com/tendermint/tendermint/libs/cli"
 	cmn "github.com/tendermint/tendermint/libs/common"
 	"github.com/tendermint/tendermint/p2p"
@@ -49,7 +48,7 @@ func GetInitCmd() *cobra.Command {
 
 func initFiles(cmd *cobra.Command, args []string) error {
 	initTendermint()
-	initCyberMilesDb()
+	initDevChainDb()
 	// initTravisCmd()
 	return initEthermint()
 }
@@ -91,11 +90,8 @@ func initTendermint() {
 
 		genDoc.Validators = []types.GenesisValidator{{
 			PubKey:    types.PubKey{privValidator.GetPubKey()},
-			Power:     "10",
-			Shares:    1000000,
+			Power:     "1000",
 			Address:   "0x7eff122b94897ea5b0e2a9abf47b86337fafebdc",
-			CompRate:  sdk.NewRat(2, 10),
-			MaxAmount: 10000000,
 		}}
 
 		if err := genDoc.SaveAs(genFile); err != nil {
@@ -161,37 +157,22 @@ func initEthermint() error {
 	return nil
 }
 
-func initCyberMilesDb() {
+func initDevChainDb() {
 	rootDir := viper.GetString(cli.HomeFlag)
 	stakeDbPath := filepath.Join(rootDir, "data", utils.DB_FILE_NAME)
 
 	if _, err := os.OpenFile(stakeDbPath, os.O_RDONLY, 0444); err != nil {
 		db, err := sql.Open("sqlite3", stakeDbPath)
 		if err != nil {
-			ethUtils.Fatalf("Initializing cybermiles database: %s", err.Error())
+			ethUtils.Fatalf("Initializing devchain database: %s", err.Error())
 		}
 		defer db.Close()
 
 		sqlStmt := `
-	create table candidates(id integer not null primary key autoincrement, address text not null, pub_key text not null, shares text not null default '0', voting_power integer default 0, pending_voting_power integer default 0, max_shares text not null default '0', comp_rate text not null default '0', name text not null default '', website text not null default '', location text not null default '', email text not null default '', profile text not null default '', verified text not null default 'N', active text not null default 'Y', rank integer not null default 0, state text not null default '', hash text not null default '', block_height integer not null, num_of_delegators integer not null default 0, created_at integer not null);
+	create table candidates(id integer not null primary key autoincrement, address text not null, pub_key text not null, voting_power integer default 0, name text not null default '', website text not null default '', location text not null default '', email text not null default '', profile text not null default '', verified text not null default 'N', active text not null default 'Y', state text not null default '', hash text not null default '', block_height integer not null, created_at integer not null);
 	create unique index idx_candidates_pub_key on candidates(pub_key);
 	create unique index idx_candidates_address on candidates(address);
 	create index idx_candidates_hash on candidates(hash);
-	create table delegations(id integer not null primary key autoincrement, delegator_address text not null, candidate_id integer not null, delegate_amount text not null default '0', award_amount text not null default '0', withdraw_amount text not null default '0', pending_withdraw_amount text not null default '0', slash_amount text not null default '0', comp_rate text not null default '0', hash text not null default '',  voting_power integer not null default 0, state text not null default 'Y', block_height integer not null, average_staking_date integer not null default 0, created_at integer not null);
-	create unique index idx_delegations_delegator_address_candidate_id on delegations(delegator_address, candidate_id);
-	create index idx_delegations_hash on delegations(hash);
- 	create table delegate_history(id integer not null primary key autoincrement, delegator_address text not null, candidate_id integer not null, amount text not null default '0', op_code text not null default '', block_height integer not null, hash text not null default '');
-	create index idx_delegate_history_delegator_address on delegate_history(delegator_address);
-	create index idx_delegate_history_candidate_id on delegate_history(candidate_id);
-	create index idx_delegate_history_hash on delegate_history(hash);
-	create table slashes(id integer not null primary key autoincrement, candidate_id integer not null, slash_ratio integer default 0, slash_amount text not null, reason text not null default '', created_at integer not null, block_height integer not null, hash text not null default '');
-	create index idx_slashes_candidate_id on slashes(candidate_id);
-	create index idx_slashes_hash on slashes(hash);
- 	create table unstake_requests(id integer not null primary key autoincrement, delegator_address text not null, candidate_id integer not null, initiated_block_height integer default 0, performed_block_height integer default 0, amount text not null default '0', state text not null default 'PENDING', hash text not null default '');
- 	create index idx_unstake_requests_delegator_address on unstake_requests(delegator_address);
- 	create table candidate_daily_stakes(id integer not null primary key autoincrement, candidate_id integer not null, amount text not null default '0', block_height integer not null, hash text not null default '');
-	create index idx_candidate_daily_stakes_candidate_id on candidate_daily_stakes(candidate_id);
-	create index idx_candidate_daily_stakes_hash on candidate_daily_stakes(hash);
 	create table candidate_account_update_requests(id integer primary key autoincrement, candidate_id integer not null, from_address text not null, to_address text not null, created_block_height integer not null, accepted_block_height integer not null, state text not null, hash text not null default '');
 	create index idx_candidate_account_update_requests_to_address on candidate_account_update_requests(to_address);
 	create index idx_candidate_account_update_requests_hash on candidate_account_update_requests(hash);

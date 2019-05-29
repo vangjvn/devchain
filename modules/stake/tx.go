@@ -19,9 +19,6 @@ const (
 	ByteTxWithdrawCandidacy            = 0x57
 	ByteTxVerifyCandidacy              = 0x58
 	ByteTxActivateCandidacy            = 0x59
-	ByteTxDelegate                     = 0x60
-	ByteTxWithdraw                     = 0x61
-	ByteTxSetCompRate                  = 0x62
 	ByteTxUpdateCandidacyAccount       = 0x63
 	ByteTxAcceptCandidacyAccountUpdate = 0x64
 	ByteTxDeactivateCandidacy          = 0x65
@@ -31,9 +28,6 @@ const (
 	TypeTxWithdrawCandidacy            = "stake/withdrawCandidacy"
 	TypeTxActivateCandidacy            = "stake/activateCandidacy"
 	TypeTxDeactivateCandidacy          = "stake/deactivateCandidacy"
-	TypeTxDelegate                     = "stake/delegate"
-	TypeTxWithdraw                     = "stake/withdraw"
-	TypeTxSetCompRate                  = "stake/setCompRate"
 	TypeTxUpdateCandidacyAccount       = "stake/updateCandidacyAccount"
 	TypeTxAcceptCandidacyAccountUpdate = "stake/acceptCandidacyAccountUpdate"
 )
@@ -45,20 +39,15 @@ func init() {
 	sdk.TxMapper.RegisterImplementation(TxVerifyCandidacy{}, TypeTxVerifyCandidacy, ByteTxVerifyCandidacy)
 	sdk.TxMapper.RegisterImplementation(TxActivateCandidacy{}, TypeTxActivateCandidacy, ByteTxActivateCandidacy)
 	sdk.TxMapper.RegisterImplementation(TxDeactivateCandidacy{}, TypeTxDeactivateCandidacy, ByteTxDeactivateCandidacy)
-	sdk.TxMapper.RegisterImplementation(TxDelegate{}, TypeTxDelegate, ByteTxDelegate)
-	sdk.TxMapper.RegisterImplementation(TxWithdraw{}, TypeTxWithdraw, ByteTxWithdraw)
-	sdk.TxMapper.RegisterImplementation(TxSetCompRate{}, TypeTxSetCompRate, ByteTxSetCompRate)
 	sdk.TxMapper.RegisterImplementation(TxUpdateCandidacyAccount{}, TypeTxUpdateCandidacyAccount, ByteTxUpdateCandidacyAccount)
 	sdk.TxMapper.RegisterImplementation(TxAcceptCandidacyAccountUpdate{}, TypeTxAcceptCandidacyAccountUpdate, ByteTxAcceptCandidacyAccountUpdate)
 }
 
 //Verify interface at compile time
-var _, _, _, _, _, _, _, _, _, _, _ sdk.TxInner = &TxDeclareCandidacy{}, &TxUpdateCandidacy{}, &TxWithdrawCandidacy{}, TxVerifyCandidacy{}, &TxActivateCandidacy{}, &TxDelegate{}, &TxWithdraw{}, &TxSetCompRate{}, &TxUpdateCandidacyAccount{}, &TxAcceptCandidacyAccountUpdate{}, &TxDeactivateCandidacy{}
+var _, _, _, _, _, _, _, _ sdk.TxInner = &TxDeclareCandidacy{}, &TxUpdateCandidacy{}, &TxWithdrawCandidacy{}, TxVerifyCandidacy{}, &TxActivateCandidacy{}, &TxUpdateCandidacyAccount{}, &TxAcceptCandidacyAccountUpdate{}, &TxDeactivateCandidacy{}
 
 type TxDeclareCandidacy struct {
 	PubKey      string      `json:"pub_key"`
-	MaxAmount   string      `json:"max_amount"`
-	CompRate    sdk.Rat     `json:"comp_rate"`
 	Description Description `json:"description"`
 }
 
@@ -66,17 +55,9 @@ func (tx TxDeclareCandidacy) ValidateBasic() error {
 	return nil
 }
 
-func (tx TxDeclareCandidacy) SelfStakingAmount(ssr sdk.Rat) (res sdk.Int) {
-	maxAmount, _ := sdk.NewIntFromString(tx.MaxAmount)
-	res = maxAmount.MulRat(ssr)
-	return
-}
-
-func NewTxDeclareCandidacy(pubKey types.PubKey, maxAmount string, compRate sdk.Rat, description Description) sdk.Tx {
+func NewTxDeclareCandidacy(pubKey types.PubKey, description Description) sdk.Tx {
 	return TxDeclareCandidacy{
 		PubKey:      types.PubKeyString(pubKey),
-		MaxAmount:   maxAmount,
-		CompRate:    compRate,
 		Description: description,
 	}.Wrap()
 }
@@ -85,8 +66,6 @@ func (tx TxDeclareCandidacy) Wrap() sdk.Tx { return sdk.Tx{tx} }
 
 type TxUpdateCandidacy struct {
 	PubKey      string      `json:"pub_key"`
-	MaxAmount   string      `json:"max_amount"`
-	CompRate    sdk.Rat     `json:"comp_rate"`
 	Description Description `json:"description"`
 }
 
@@ -94,12 +73,10 @@ func (tx TxUpdateCandidacy) ValidateBasic() error {
 	return nil
 }
 
-func NewTxUpdateCandidacy(pubKey types.PubKey, maxAmount string, compRate sdk.Rat, description Description) sdk.Tx {
+func NewTxUpdateCandidacy(pubKey types.PubKey, description Description) sdk.Tx {
 	return TxUpdateCandidacy{
 		PubKey:      types.PubKeyString(pubKey),
-		MaxAmount:   maxAmount,
 		Description: description,
-		CompRate:    compRate,
 	}.Wrap()
 }
 
@@ -166,68 +143,6 @@ func NewTxDeactivateCandidacy() sdk.Tx {
 
 // Wrap - Wrap a Tx as a Basecoin Tx
 func (tx TxDeactivateCandidacy) Wrap() sdk.Tx { return sdk.Tx{tx} }
-
-// TxDelegate - struct for bonding or unbonding transactions
-type TxDelegate struct {
-	ValidatorAddress common.Address `json:"validator_address"`
-	Amount           string         `json:"amount"`
-	CubeBatch        string         `json:"cube_batch"`
-	Sig              string         `json:"sig"`
-}
-
-func (tx TxDelegate) ValidateBasic() error {
-	return nil
-}
-
-func NewTxDelegate(validatorAddress common.Address, amount, cubeBatch, sig string) sdk.Tx {
-	return TxDelegate{
-		ValidatorAddress: validatorAddress,
-		Amount:           amount,
-		CubeBatch:        cubeBatch,
-		Sig:              sig,
-	}.Wrap()
-}
-
-// Wrap - Wrap a Tx as a Travis Tx
-func (tx TxDelegate) Wrap() sdk.Tx { return sdk.Tx{tx} }
-
-type TxWithdraw struct {
-	ValidatorAddress common.Address `json:"validator_address"`
-	Amount           string         `json:"amount"`
-}
-
-func (tx TxWithdraw) ValidateBasic() error {
-	return nil
-}
-
-func NewTxWithdraw(validatorAddress common.Address, amount string) sdk.Tx {
-	return TxWithdraw{
-		ValidatorAddress: validatorAddress,
-		Amount:           amount,
-	}.Wrap()
-}
-
-// Wrap - Wrap a Tx as a Travis Tx
-func (tx TxWithdraw) Wrap() sdk.Tx { return sdk.Tx{tx} }
-
-type TxSetCompRate struct {
-	DelegatorAddress common.Address `json:"delegator_address"`
-	CompRate         sdk.Rat        `json:"comp_rate"`
-}
-
-func (tx TxSetCompRate) ValidateBasic() error {
-	return nil
-}
-
-func NewTxSetCompRate(delegatorAddress common.Address, compRate sdk.Rat) sdk.Tx {
-	return TxSetCompRate{
-		DelegatorAddress: delegatorAddress,
-		CompRate:         compRate,
-	}.Wrap()
-}
-
-// Wrap - Wrap a Tx as a Travis Tx
-func (tx TxSetCompRate) Wrap() sdk.Tx { return sdk.Tx{tx} }
 
 type TxUpdateCandidacyAccount struct {
 	NewCandidateAddress common.Address `json:"new_candidate_account"`

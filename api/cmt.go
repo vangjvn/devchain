@@ -310,7 +310,7 @@ func (s *CmtRPCService) DeclareCandidacy(args DeclareCandidacyArgs) (*ctypes.Res
 	if err != nil {
 		return nil, err
 	}
-	tx := stake.NewTxDeclareCandidacy(pubKey, args.MaxAmount.ToInt().String(), args.CompRate, args.Description)
+	tx := stake.NewTxDeclareCandidacy(pubKey, args.Description)
 
 	txArgs, err := s.makeTravisTxArgs(tx, args.From, args.Nonce)
 	if err != nil {
@@ -340,17 +340,10 @@ type UpdateCandidacyArgs struct {
 	Nonce       *hexutil.Uint64   `json:"nonce"`
 	From        common.Address    `json:"from"`
 	PubKey      string            `json:"pubKey"`
-	MaxAmount   *hexutil.Big      `json:"maxAmount"`
-	CompRate    sdk.Rat           `json:"compRate"`
 	Description stake.Description `json:"description"`
 }
 
 func (s *CmtRPCService) UpdateCandidacy(args UpdateCandidacyArgs) (*ctypes.ResultBroadcastTxCommit, error) {
-	maxAmount := ""
-	if args.MaxAmount != nil {
-		maxAmount = args.MaxAmount.ToInt().String()
-	}
-
 	pubKey := types.PubKey{}
 	if !utils.IsBlank(args.PubKey) {
 		tmp, err := types.GetPubKey(args.PubKey)
@@ -360,7 +353,7 @@ func (s *CmtRPCService) UpdateCandidacy(args UpdateCandidacyArgs) (*ctypes.Resul
 		pubKey = tmp
 	}
 
-	tx := stake.NewTxUpdateCandidacy(pubKey, maxAmount, args.CompRate, args.Description)
+	tx := stake.NewTxUpdateCandidacy(pubKey, args.Description)
 
 	txArgs, err := s.makeTravisTxArgs(tx, args.From, args.Nonce)
 	if err != nil {
@@ -393,24 +386,6 @@ type DeactivateCandidacyArgs struct {
 
 func (s *CmtRPCService) DeactivateCandidacy(args DeactivateCandidacyArgs) (*ctypes.ResultBroadcastTxCommit, error) {
 	tx := stake.NewTxDeactivateCandidacy()
-
-	txArgs, err := s.makeTravisTxArgs(tx, args.From, args.Nonce)
-	if err != nil {
-		return nil, err
-	}
-
-	return s.signAndBroadcastTxCommit(txArgs)
-}
-
-type SetCompRateArgs struct {
-	Nonce            *hexutil.Uint64 `json:"nonce"`
-	From             common.Address  `json:"from"`
-	DelegatorAddress common.Address  `json:"delegatorAddress"`
-	CompRate         sdk.Rat         `json:"compRate"`
-}
-
-func (s *CmtRPCService) SetCompRate(args SetCompRateArgs) (*ctypes.ResultBroadcastTxCommit, error) {
-	tx := stake.NewTxSetCompRate(args.DelegatorAddress, args.CompRate)
 
 	txArgs, err := s.makeTravisTxArgs(tx, args.From, args.Nonce)
 	if err != nil {
@@ -472,44 +447,6 @@ func (s *CmtRPCService) VerifyCandidacy(args VerifyCandidacyArgs) (*ctypes.Resul
 	return s.signAndBroadcastTxCommit(txArgs)
 }
 
-type DelegateArgs struct {
-	Nonce            *hexutil.Uint64 `json:"nonce"`
-	From             common.Address  `json:"from"`
-	ValidatorAddress common.Address  `json:"validatorAddress"`
-	Amount           hexutil.Big     `json:"amount"`
-	CubeBatch        string          `json:"cubeBatch"`
-	Sig              string          `json:"sig"`
-}
-
-func (s *CmtRPCService) Delegate(args DelegateArgs) (*ctypes.ResultBroadcastTxCommit, error) {
-	tx := stake.NewTxDelegate(args.ValidatorAddress, args.Amount.ToInt().String(), args.CubeBatch, args.Sig)
-
-	txArgs, err := s.makeTravisTxArgs(tx, args.From, args.Nonce)
-	if err != nil {
-		return nil, err
-	}
-
-	return s.signAndBroadcastTxCommit(txArgs)
-}
-
-type WithdrawArgs struct {
-	Nonce            *hexutil.Uint64 `json:"nonce"`
-	From             common.Address  `json:"from"`
-	ValidatorAddress common.Address  `json:"validatorAddress"`
-	Amount           hexutil.Big     `json:"amount"`
-}
-
-func (s *CmtRPCService) Withdraw(args WithdrawArgs) (*ctypes.ResultBroadcastTxCommit, error) {
-	tx := stake.NewTxWithdraw(args.ValidatorAddress, args.Amount.ToInt().String())
-
-	txArgs, err := s.makeTravisTxArgs(tx, args.From, args.Nonce)
-	if err != nil {
-		return nil, err
-	}
-
-	return s.signAndBroadcastTxCommit(txArgs)
-}
-
 type StakeQueryResult struct {
 	Height int64       `json:"height"`
 	Data   interface{} `json:"data"`
@@ -533,36 +470,6 @@ func (s *CmtRPCService) QueryValidator(address common.Address, height uint64) (*
 	}
 
 	return &StakeQueryResult{h, &candidate}, nil
-}
-
-func (s *CmtRPCService) QueryDelegator(address common.Address, height uint64) (*StakeQueryResult, error) {
-	var slotDelegates []*stake.Delegation
-	h, err := s.getParsedFromJson("/delegator", []byte(address.Hex()), &slotDelegates, height)
-	if err != nil {
-		return nil, err
-	}
-
-	return &StakeQueryResult{h, slotDelegates}, nil
-}
-
-func (s *CmtRPCService) QueryAwardInfos(height uint64) (*StakeQueryResult, error) {
-	var awardInfos stake.AwardInfos
-	h, err := s.getParsedFromJson("/awardInfo", utils.AwardInfosKey, &awardInfos, height)
-	if err != nil {
-		return nil, err
-	}
-
-	return &StakeQueryResult{h, awardInfos}, nil
-}
-
-func (s *CmtRPCService) QueryAbsentValidators(height uint64) (*StakeQueryResult, error) {
-	var absentValidators stake.AbsentValidators
-	h, err := s.getParsedFromJson("/key", utils.AbsentValidatorsKey, &absentValidators, height)
-	if err != nil {
-		return nil, err
-	}
-
-	return &StakeQueryResult{h, absentValidators}, nil
 }
 
 type GovernanceTransferFundProposalArgs struct {

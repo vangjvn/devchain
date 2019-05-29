@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"github.com/second-state/devchain/utils"
+	"github.com/second-state/devchain/modules/stake"
 	"math/big"
 	"path"
 	"path/filepath"
@@ -22,7 +22,6 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 
 	"github.com/second-state/devchain/modules/governance"
-	"github.com/second-state/devchain/modules/stake"
 	"github.com/second-state/devchain/sdk/dbm"
 	"github.com/second-state/devchain/sdk/errors"
 	sm "github.com/second-state/devchain/sdk/state"
@@ -200,33 +199,9 @@ func (app *StoreApp) Query(reqQuery abci.RequestQuery) (resQuery abci.ResponseQu
 		} else {
 			resQuery.Value = []byte{}
 		}
-	case "/delegator":
-		address := common.HexToAddress(string(reqQuery.Data))
-		delegations := stake.QueryDelegationsByAddress(address)
-		for _, d := range delegations {
-			validator := stake.QueryCandidateById(d.CandidateId)
-			if validator != nil {
-				d.ValidatorAddress = validator.OwnerAddress
-				d.PubKey = validator.PubKey
-			}
-		}
-
-		b, _ := json.Marshal(delegations)
-		resQuery.Value = b
 	case "/governance/proposals":
 		proposals := governance.QueryProposals()
 		b, _ := json.Marshal(proposals)
-		resQuery.Value = b
-	case "/awardInfo":
-		_, value := tree.GetVersioned(utils.AwardInfosKey, height)
-		var awardInfos stake.AwardInfos
-		err := cdc.UnmarshalBinary(value, &awardInfos)
-		if err != nil {
-			resQuery.Log = err.Error()
-			break
-		}
-
-		b, _ := json.Marshal(awardInfos)
 		resQuery.Value = b
 	default:
 		resQuery.Code = errors.CodeTypeUnknownRequest
@@ -322,7 +297,7 @@ func loadState(dbName string, cacheSize int, historySize int64) (*sm.State, erro
 
 func (app *StoreApp) GetOldDbHash() []byte {
 	db, _ := dbm.Sqliter.GetDB()
-	tables := []string{"candidates", "delegations", "governance_proposal", "governance_vote", "candidate_account_update_requests", "slashes"}
+	tables := []string{"candidates", "governance_proposal", "governance_vote", "candidate_account_update_requests"}
 	hashes := make([]byte, len(tables))
 	for _, table := range tables {
 		hashes = append(hashes, getTableHash(db, table)...)
@@ -332,7 +307,7 @@ func (app *StoreApp) GetOldDbHash() []byte {
 
 func (app *StoreApp) GetDbHash() []byte {
 	db, _ := dbm.Sqliter.GetDB()
-	tables := []string{"candidates", "delegations", "governance_proposal", "governance_vote", "candidate_account_update_requests", "slashes"}
+	tables := []string{"candidates", "governance_proposal", "governance_vote", "candidate_account_update_requests"}
 	hashes := make([]byte, len(tables))
 	for _, table := range tables {
 		hashes = append(hashes, getTableHash(db, table)...)

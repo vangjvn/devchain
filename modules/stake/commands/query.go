@@ -38,18 +38,6 @@ var (
 		RunE:  cmdQueryValidators,
 		Short: "Query a list of all current validators and validator candidates",
 	}
-
-	CmdQueryDelegator = &cobra.Command{
-		Use:   "delegator",
-		RunE:  cmdQueryDelegator,
-		Short: "Query the current stake status of a delegator",
-	}
-
-	CmdQueryAwardInfo = &cobra.Command{
-		Use:   "award-info",
-		RunE:  cmdQueryAwardInfo,
-		Short: "Query the award info of a block",
-	}
 )
 
 func init() {
@@ -58,7 +46,6 @@ func init() {
 	fsAddr.String(FlagAddress, "", "account address")
 
 	CmdQueryValidator.Flags().AddFlagSet(fsAddr)
-	CmdQueryDelegator.Flags().AddFlagSet(fsAddr)
 }
 
 func cmdQueryValidators(cmd *cobra.Command, args []string) error {
@@ -76,23 +63,6 @@ func cmdQueryValidator(cmd *cobra.Command, args []string) error {
 	}
 
 	b, err := Get("/validator", []byte(address))
-	if err != nil {
-		return err
-	}
-	return Foutput(b)
-}
-
-func cmdQueryDelegator(cmd *cobra.Command, args []string) error {
-	address := viper.GetString(FlagAddress)
-	b, err := Get("/delegator", []byte(address))
-	if err != nil {
-		return err
-	}
-	return Foutput(b)
-}
-
-func cmdQueryAwardInfo(cmd *cobra.Command, args []string) error {
-	b, err := GetByHeight("/awardInfo", []byte{0x00}, int64(viper.GetInt(FlagHeight)))
 	if err != nil {
 		return err
 	}

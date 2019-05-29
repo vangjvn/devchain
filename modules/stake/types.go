@@ -9,12 +9,10 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	"github.com/second-state/devchain/sdk"
 	"github.com/second-state/devchain/types"
 	"github.com/second-state/devchain/utils"
 	"github.com/tendermint/tendermint/crypto/ed25519"
 	"golang.org/x/crypto/ripemd160"
-	"math"
 )
 
 //_________________________________________________________________________
@@ -31,20 +29,13 @@ type Candidate struct {
 	Id                    int64        `json:"id"`
 	PubKey                types.PubKey `json:"pub_key"`                 // Pubkey of candidate
 	OwnerAddress          string       `json:"owner_address"`           // Sender of BondTx - UnbondTx returns here
-	Shares                string       `json:"shares"`                  // Total number of delegated shares to this candidate, equivalent to coins held in bond account
-	VotingPower           int64        `json:"voting_power"`            // Voting power which is used to calculate rewards
-	TendermintVotingPower int64        `json:"tendermint_voting_power"` // Tendermint Voting power which is used by tendermint
-	PendingVotingPower    int64        `json:"pending_voting_power"`
-	MaxShares             string       `json:"max_shares"`
-	CompRate              sdk.Rat      `json:"comp_rate"`
+	VotingPower           int64        `json:"voting_power"`
 	CreatedAt             int64        `json:"created_at"`
 	Description           Description  `json:"description"`
 	Verified              string       `json:"verified"`
 	Active                string       `json:"active"`
 	BlockHeight           int64        `json:"block_height"`
-	Rank                  int64        `json:"rank"`
 	State                 string       `json:"state"`
-	NumOfDelegators       int64        `json:"num_of_delegators"`
 }
 
 type Description struct {
@@ -61,25 +52,6 @@ func (c *Candidate) Validator() Validator {
 	return Validator(*c)
 }
 
-func (c *Candidate) ParseShares() sdk.Int {
-	return utils.ParseInt(c.Shares)
-}
-
-func (c *Candidate) ParseMaxShares() sdk.Int {
-	return utils.ParseInt(c.MaxShares)
-}
-
-func (c *Candidate) AddShares(value sdk.Int) (res sdk.Int) {
-	res = c.ParseShares().Add(value)
-	c.Shares = res.String()
-	return
-}
-
-func (c *Candidate) SelfStakingAmount(ssr sdk.Rat) (res sdk.Int) {
-	res = c.ParseMaxShares().MulRat(ssr)
-	return
-}
-
 func (c *Candidate) Hash() []byte {
 	var excludedFields []string
 	bs := types.Hash(c, excludedFields)
@@ -88,39 +60,8 @@ func (c *Candidate) Hash() []byte {
 	return hasher.Sum(nil)
 }
 
-func (c *Candidate) CalcVotingPower(blockHeight int64) (res int64) {
-	res = 0
-	minStakingAmount := sdk.NewInt(utils.GetParams().MinStakingAmount).Mul(sdk.E18Int)
-	delegations := GetDelegationsByCandidate(c.Id, "Y")
-	sharesPercentage := c.computeTotalSharesPercentage()
-
-	for _, d := range delegations {
-		var vp int64
-		// if the amount of staked CMTs is less than 1000, no awards will be distributed.
-		if d.ProfitableShares().LT(minStakingAmount) {
-			vp = 0
-			d.ResetVotingPower()
-		} else {
-			vp = d.CalcVotingPower(sharesPercentage, blockHeight)
-		}
-		UpdateDelegation(d) // update delegator's voting power
-		res += vp
-	}
-	return
-}
-
-func (c *Candidate) computeTotalSharesPercentage() (res sdk.Rat) {
-	totalShares := GetCandidatesTotalShares()
-	shares, _ := sdk.NewIntFromString(c.Shares)
-	p := sdk.NewRat(shares.Div(sdk.E18Int).Int64(), totalShares.Div(sdk.E18Int).Int64())
-	threshold := utils.GetParams().ValidatorSizeThreshold
-	if p.GT(threshold) {
-		res = threshold.Quo(p)
-	} else {
-		res = sdk.OneRat
-	}
-
-	return
+func (c *Candidate) CalcVotingPower() (res int64) {
+	return 1000
 }
 
 func (c Candidate) IsActive() bool {
@@ -138,7 +79,7 @@ func (v Validator) ABCIValidator() abci.Validator {
 			Type: abci.PubKeyEd25519,
 			Data: pk[:],
 		},
-		Power: v.TendermintVotingPower,
+		Power: v.VotingPower,
 	}
 }
 
@@ -168,7 +109,7 @@ func (cs Candidates) Sort() {
 }
 
 // update the voting power and save
-func (cs Candidates) updateVotingPower(blockHeight int64, updates PubKeyUpdates) Candidates {
+func (cs Candidates) updateVotingPower(updates PubKeyUpdates) Candidates {
 	// update voting power
 	for _, c := range cs {
 		if len(updates) != 0 {
@@ -178,42 +119,18 @@ func (cs Candidates) updateVotingPower(blockHeight int64, updates PubKeyUpdates)
 			}
 		}
 
-		c.PendingVotingPower = c.CalcVotingPower(blockHeight)
 		if c.Active == "N" {
 			c.VotingPower = 0
-		} else if c.VotingPower != c.PendingVotingPower {
-			c.VotingPower = c.PendingVotingPower
+			c.State = "Candidate"
+		} else {
+			c.VotingPower = c.CalcVotingPower()
+			c.State = "Validator"
 		}
+		updateCandidate(c)
 	}
 
 	cs.Sort()
-	for i, c := range cs {
-		// truncate the power
-		if i >= int(utils.GetParams().MaxVals) {
-			if i >= (int(utils.GetParams().MaxVals + utils.GetParams().BackupVals)) {
-				c.State = "Candidate"
-				c.VotingPower = 0
-				c.TendermintVotingPower = 0
-			} else {
-				if c.Active == "Y" {
-					c.State = "Backup Validator"
-					c.TendermintVotingPower = 10
-				} else {
-					c.State = "Candidate"
-					c.TendermintVotingPower = 0
-				}
-			}
-		} else if c.VotingPower == 0 {
-			c.State = "Candidate"
-			c.TendermintVotingPower = 0
-		} else {
-			c.State = "Validator"
-			c.TendermintVotingPower = 10
-		}
 
-		c.Rank = int64(i)
-		updateCandidate(c)
-	}
 	return cs
 }
 
@@ -236,10 +153,6 @@ func (cs Candidates) Validators() Validators {
 		if c.VotingPower == 0 { //exit as soon as the first Voting power set to zero is found
 			return validators[:i]
 		}
-		if i >= int(utils.GetParams().MaxVals+utils.GetParams().BackupVals) {
-			return validators[:i]
-		}
-		c.TendermintVotingPower = 10
 		validators[i] = c.Validator()
 	}
 
@@ -292,7 +205,7 @@ func (vs Validators) validatorsChanged(vs2 Validators) (changed []abci.Validator
 			i++
 			continue
 		}
-		if vs[i].TendermintVotingPower != vs2[j].TendermintVotingPower {
+		if vs[i].VotingPower != vs2[j].VotingPower {
 			changed[n] = vs2[j].ABCIValidator()
 			n++
 		}
@@ -321,7 +234,7 @@ func (vs Validators) Remove(i int) Validators {
 
 // UpdateValidatorSet - Updates the voting power for the candidate set and
 // returns the subset of validators which have changed for Tendermint
-func UpdateValidatorSet(store state.SimpleDB, blockHeight int64) (change []abci.Validator, err error) {
+func UpdateValidatorSet(store state.SimpleDB) (change []abci.Validator, err error) {
 	// get the validators before update
 	candidates := GetCandidates()
 	v1 := candidates.Validators()
@@ -333,11 +246,8 @@ func UpdateValidatorSet(store state.SimpleDB, blockHeight int64) (change []abci.
 		json.Unmarshal(b, &updates)
 	}
 
-	v2 := candidates.updateVotingPower(blockHeight, updates).Validators()
+	v2 := candidates.updateVotingPower(updates).Validators()
 	change = v1.validatorsChanged(v2)
-
-	// clean all of the candidates had been withdrawed
-	cleanCandidates()
 
 	if len(updates) != 0 {
 		for _, c := range candidates {
@@ -371,218 +281,6 @@ func (vs Validators) Contains(pk types.PubKey) bool {
 		}
 	}
 	return false
-}
-
-//_________________________________________________________________________
-
-type Delegation struct {
-	Id                    int64          `json:"id"`
-	DelegatorAddress      common.Address `json:"delegator_address"`
-	PubKey                types.PubKey   `json:"pub_key"`
-	ValidatorAddress      string         `json:"validator_address"`
-	DelegateAmount        string         `json:"delegate_amount"`
-	AwardAmount           string         `json:"award_amount"`
-	WithdrawAmount        string         `json:"withdraw_amount"`
-	PendingWithdrawAmount string         `json:"pending_withdraw_amount"`
-	SlashAmount           string         `json:"slash_amount"`
-	CompRate              sdk.Rat        `json:"comp_rate"`
-	VotingPower           int64          `json:"voting_power"`
-	CreatedAt             int64          `json:"created_at"`
-	State                 string         `json:"state"`
-	BlockHeight           int64          `json:"block_height"`
-	AverageStakingDate    int64          `json:"average_staking_date"`
-	CandidateId           int64          `json:"candidate_id"`
-}
-
-func (d *Delegation) Shares() (res sdk.Int) {
-	res = d.ParseDelegateAmount().Add(d.ParseAwardAmount()).Sub(d.ParseWithdrawAmount()).Sub(d.ParseSlashAmount()).Sub(d.ParsePendingWithdrawAmount())
-	return
-}
-
-func (d *Delegation) ProfitableShares() (res sdk.Int) {
-	res = d.ParseDelegateAmount().Add(d.ParseAwardAmount()).Sub(d.ParseWithdrawAmount()).Sub(d.ParseSlashAmount())
-	return
-}
-
-func (d *Delegation) ParseDelegateAmount() sdk.Int {
-	return utils.ParseInt(d.DelegateAmount)
-}
-
-func (d *Delegation) ParseAwardAmount() sdk.Int {
-	return utils.ParseInt(d.AwardAmount)
-}
-
-func (d *Delegation) ParseWithdrawAmount() sdk.Int {
-	return utils.ParseInt(d.WithdrawAmount)
-}
-
-func (d *Delegation) ParsePendingWithdrawAmount() sdk.Int {
-	return utils.ParseInt(d.PendingWithdrawAmount)
-}
-
-func (d *Delegation) ParseSlashAmount() sdk.Int {
-	return utils.ParseInt(d.SlashAmount)
-}
-
-func (d *Delegation) AddDelegateAmount(value sdk.Int) (res sdk.Int) {
-	res = d.ParseDelegateAmount().Add(value)
-	d.DelegateAmount = res.String()
-	return
-}
-
-func (d *Delegation) AddAwardAmount(value sdk.Int) (res sdk.Int) {
-	res = d.ParseAwardAmount().Add(value)
-	d.AwardAmount = res.String()
-	return
-}
-
-func (d *Delegation) AddWithdrawAmount(value sdk.Int) (res sdk.Int) {
-	res = d.ParseWithdrawAmount().Add(value)
-	d.WithdrawAmount = res.String()
-	return
-}
-
-func (d *Delegation) AddPendingWithdrawAmount(value sdk.Int) (res sdk.Int) {
-	res = d.ParsePendingWithdrawAmount().Add(value)
-	d.PendingWithdrawAmount = res.String()
-	return
-}
-
-func (d *Delegation) AddSlashAmount(value sdk.Int) (res sdk.Int) {
-	res = d.ParseSlashAmount().Add(value)
-	d.SlashAmount = res.String()
-	return
-}
-
-func (d *Delegation) ResetVotingPower() {
-	d.VotingPower = 0
-}
-
-func (d *Delegation) CalcVotingPower(sharesPercentage sdk.Rat, blockHeight int64) int64 {
-	candidate := GetCandidateById(d.CandidateId)
-	s := d.ProfitableShares().Div(sdk.E18Int).MulRat(sharesPercentage).Int64()
-
-	t := d.AverageStakingDate
-	if t == 0 {
-		t = 1
-	} else if t > utils.HalfYear {
-		t = utils.HalfYear
-	}
-
-	one := sdk.OneRat
-	r1 := one
-	r2 := sdk.NewRat(t, 180)
-	r3 := sdk.NewRat(candidate.NumOfDelegators*4, 1)
-	r4 := sdk.NewRat(s, 1)
-	r2 = r2.Add(one)
-	r3 = one.Sub(one.Quo(r3.Add(one)))
-	r3 = r3.Mul(r3)
-	x, _ := r1.Mul(r3).Mul(r4).Float64()
-	f2, _ := r2.Float64()
-	f2 = utils.RoundFloat(f2, 2)
-	l := math.Log2(f2)
-	vp := int64(math.Ceil(x * l))
-	d.VotingPower = vp
-	return vp
-}
-
-func (d *Delegation) Hash() []byte {
-	var excludedFields []string
-	bs := types.Hash(d, excludedFields)
-	hasher := ripemd160.New()
-	hasher.Write(bs)
-	return hasher.Sum(nil)
-}
-
-func (d *Delegation) AccumulateAverageStakingDate() {
-	minStakingAmount := sdk.NewInt(utils.GetParams().MinStakingAmount).Mul(sdk.E18Int)
-	if d.Shares().GTE(minStakingAmount) {
-		d.AverageStakingDate += 1
-	}
-}
-
-func (d *Delegation) ReduceAverageStakingDate(withdrawAmount sdk.Int) {
-	num := withdrawAmount.Div(sdk.E18Int).Int64()
-	denom := d.Shares().Div(sdk.E18Int).Int64()
-	if denom == 0 {
-		d.AverageStakingDate = 0
-	} else {
-		p := sdk.NewRat(num, denom)
-		d.AverageStakingDate = sdk.NewInt(d.AverageStakingDate).MulRat(sdk.OneRat.Sub(p)).Int64()
-	}
-}
-
-type DelegateHistory struct {
-	Id               int64          `json:"id"`
-	DelegatorAddress common.Address `json:"delegator_address"`
-	Amount           sdk.Int        `json:"amount"`
-	OpCode           string         `json:"op_code"`
-	BlockHeight      int64          `json:"block_height"`
-	CandidateId      int64          `json:"candidate_id"`
-}
-
-func (d *DelegateHistory) Hash() []byte {
-	var excludedFields []string
-	bs := types.Hash(d, excludedFields)
-	hasher := ripemd160.New()
-	hasher.Write(bs)
-	return hasher.Sum(nil)
-}
-
-type Slash struct {
-	Id          int64   `json:"id"`
-	SlashRatio  sdk.Rat `json:"slash_ratio"`
-	SlashAmount sdk.Int `json:"slash_amount"`
-	Reason      string  `json:"reason"`
-	CreatedAt   int64   `json:"created_at"`
-	BlockHeight int64   `json:"block_height"`
-	CandidateId int64   `json:"candidate_id"`
-}
-
-func (s *Slash) Hash() []byte {
-	var excludedFields []string
-	bs := types.Hash(s, excludedFields)
-	hasher := ripemd160.New()
-	hasher.Write(bs)
-	return hasher.Sum(nil)
-}
-
-type UnstakeRequest struct {
-	Id                   int64          `json:"id"`
-	DelegatorAddress     common.Address `json:"delegator_address"`
-	InitiatedBlockHeight int64          `json:"initiated_block_height"`
-	PerformedBlockHeight int64          `json:"performed_block_height"`
-	Amount               string         `json:"amount"`
-	State                string         `json:"state"`
-	CandidateId          int64          `json:"candidate_id"`
-}
-
-func (r *UnstakeRequest) Hash() []byte {
-	var excludedFields []string
-	bs := types.Hash(r, excludedFields)
-	hasher := ripemd160.New()
-	hasher.Write(bs)
-	return hasher.Sum(nil)
-}
-
-type CandidateDailyStake struct {
-	Id          int64  `json:"id"`
-	Amount      string `json:"amount"`
-	BlockHeight int64  `json:"block_height"`
-	CandidateId int64  `json:"candidate_id"`
-}
-
-func (c *CandidateDailyStake) Hash() []byte {
-	var excludedFields []string
-	bs := types.Hash(c, excludedFields)
-	hasher := ripemd160.New()
-	hasher.Write(bs)
-	return hasher.Sum(nil)
-}
-
-type CubePubKey struct {
-	CubeBatch string `json:"cube_batch"`
-	PubKey    string `json:"pub_key"`
 }
 
 type CandidateAccountUpdateRequest struct {

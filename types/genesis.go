@@ -2,9 +2,8 @@ package types
 
 import (
 	"encoding/json"
-	"github.com/second-state/devchain/sdk"
-	"github.com/second-state/devchain/utils"
 	"github.com/pkg/errors"
+	"github.com/second-state/devchain/utils"
 	cmn "github.com/tendermint/tendermint/libs/common"
 	"github.com/tendermint/tendermint/types"
 	"io/ioutil"
@@ -29,11 +28,8 @@ type GenesisDoc struct {
 type GenesisValidator struct {
 	PubKey    PubKey  `json:"pub_key"`
 	Power     string  `json:"power"`
-	Shares    int64   `json:"shares"`
 	Name      string  `json:"name"`
 	Address   string  `json:"address"`
-	CompRate  sdk.Rat `json:"comp_rate"`
-	MaxAmount int64   `json:"max_amount"`
 	Website   string  `json:"website"`
 	Location  string  `json:"location"`
 	Email     string  `json:"email"`

@@ -33,10 +33,6 @@ type BaseApp struct {
 	EthApp              *EthermintApplication
 	checkedTx           map[common.Hash]*types.Transaction
 	ethereum            *eth.Ethereum
-	AbsentValidators    *stake.AbsentValidators
-	ByzantineValidators []abci.Evidence
-	PresentValidators   stake.Validators
-	BackupValidators    stake.Validators
 	blockTime           int64
 	deliverSqlTx        *sql.Tx
 	proposer            abci.Validator
@@ -197,9 +193,6 @@ func (app *BaseApp) CheckTx(txBytes []byte) abci.ResponseCheckTx {
 func (app *BaseApp) BeginBlock(req abci.RequestBeginBlock) (res abci.ResponseBeginBlock) {
 	app.blockTime = req.GetHeader().Time
 	app.EthApp.BeginBlock(req)
-	app.PresentValidators = app.PresentValidators[:0]
-	app.BackupValidators = app.BackupValidators[:0]
-	app.AbsentValidators = stake.LoadAbsentValidators(app.Append())
 
 	// init deliver sql tx for statke
 	db, err := dbm.Sqliter.GetDB()
@@ -215,83 +208,15 @@ func (app *BaseApp) BeginBlock(req abci.RequestBeginBlock) (res abci.ResponseBeg
 	governance.SetDeliverSqlTx(deliverSqlTx)
 	// init end
 
-	// handle absent validators
-	app.getAbsentValidators(req)
-	app.AbsentValidators.Clear(app.WorkingHeight())
-	stake.SaveAbsentValidators(app.Append(), app.AbsentValidators)
-
-	// handle backup validators
-	for _, bv := range stake.GetBackupValidators() {
-		// exclude the absent validators
-		if !app.AbsentValidators.Contains(bv.PubKey) {
-			app.BackupValidators = append(app.BackupValidators, bv.Validator())
-		}
-	}
-
-	// handle present validators
-	app.getPresentValidators(req)
-
-	app.logger.Info("BeginBlock", "absent_validators", app.AbsentValidators)
-	app.ByzantineValidators = req.ByzantineValidators
 	app.proposer = req.Header.Proposer
 
 	return abci.ResponseBeginBlock{}
-}
-
-func (app *BaseApp) getAbsentValidators(req abci.RequestBeginBlock) {
-	for _, sv := range req.Validators {
-		var pk ed25519.PubKeyEd25519
-		copy(pk[:], sv.Validator.PubKey.Data)
-
-		pubKey := ttypes.PubKey{pk}
-		if !sv.SignedLastBlock {
-			app.AbsentValidators.Add(pubKey, app.WorkingHeight())
-		}
-	}
-}
-
-func (app *BaseApp) getPresentValidators(req abci.RequestBeginBlock) {
-	for _, sv := range req.Validators {
-		var pk ed25519.PubKeyEd25519
-		copy(pk[:], sv.Validator.PubKey.Data)
-
-		pubKey := ttypes.PubKey{pk}
-		if sv.SignedLastBlock {
-			v := stake.GetCandidateByPubKey(pubKey)
-			if v != nil && !app.BackupValidators.Contains(pubKey) {
-				app.PresentValidators = append(app.PresentValidators, v.Validator())
-			}
-		}
-	}
 }
 
 // EndBlock - ABCI - triggers Tick actions
 func (app *BaseApp) EndBlock(req abci.RequestEndBlock) (res abci.ResponseEndBlock) {
 	app.EthApp.EndBlock(req)
 	utils.BlockGasFee = big.NewInt(0).Add(utils.BlockGasFee, app.TotalUsedGasFee)
-
-	// slash Byzantine validators
-	if len(app.ByzantineValidators) > 0 {
-		for _, bv := range app.ByzantineValidators {
-			pk, err := ttypes.GetPubKey(string(bv.Validator.PubKey.Data))
-			if err != nil {
-				continue
-			}
-
-			stake.SlashByzantineValidator(pk, app.blockTime, app.WorkingHeight())
-		}
-		app.ByzantineValidators = app.ByzantineValidators[:0]
-	}
-
-	// slash the absent validators
-	for k, v := range app.AbsentValidators.Validators {
-		pk, err := ttypes.GetPubKey(k)
-		if err != nil {
-			continue
-		}
-
-		stake.SlashAbsentValidator(pk, v, app.blockTime, app.WorkingHeight())
-	}
 
 	// Deactivate validators that not in the list of preserved validators
 	if utils.RetiringProposalId != "" {
@@ -305,7 +230,7 @@ func (app *BaseApp) EndBlock(req abci.RequestEndBlock) (res abci.ResponseEndBloc
 				i := 0
 				for ; i < len(pks); i++ {
 					if pks[i] == ttypes.PubKeyString(v.PubKey) {
-						v.TendermintVotingPower = 10
+						v.VotingPower = 1000
 						abciVs = append(abciVs, v.ABCIValidator())
 						pvSize++
 						break
@@ -329,37 +254,14 @@ func (app *BaseApp) EndBlock(req abci.RequestEndBlock) (res abci.ResponseEndBloc
 			app.logger.Error("Getting invalid RetiringProposalId")
 		}
 	}
+
 	if !toBeShutdown { // should not update validator set twice if the node is to be shutdown
 		// calculate the validator set difference
-		if calVPCheck(app.WorkingHeight()) {
-			diff, err := stake.UpdateValidatorSet(app.Append(), app.WorkingHeight())
-			if err != nil {
-				panic(err)
-			}
-			app.AddValChange(diff)
+		diff, err := stake.UpdateValidatorSet(app.Append())
+		if err != nil {
+			panic(err)
 		}
-	}
-
-	// block award
-	// run once per hour
-	if len(app.PresentValidators) > 0 {
-		stake.NewAwardDistributor(app.Append(), app.WorkingHeight(), app.PresentValidators, app.BackupValidators, app.logger).Distribute()
-	}
-	// block award end
-
-	// handle the pending unstake requests
-	stake.HandlePendingUnstakeRequests(app.WorkingHeight())
-
-	// record candidates stakes daily
-	//if calStakeCheck(app.WorkingHeight()) {
-	//	// run once a day
-	//	stake.RecordCandidateDailyStakes(app.WorkingHeight())
-	//}
-
-	// Accumulates the average staking date of all delegations
-	if calAvgStakingDateCheck(app.WorkingHeight()) {
-		// run once a day
-		stake.AccumulateDelegationsAverageStakingDate()
+		app.AddValChange(diff)
 	}
 
 	return app.StoreApp.EndBlock(req)
@@ -379,15 +281,8 @@ func (app *BaseApp) Commit() (res abci.ResponseCommit) {
 			if err != nil {
 				panic(err)
 			}
-			stake.ResetDeliverSqlTx()
 			governance.ResetDeliverSqlTx()
 		}
-
-		// slash block proposer
-		var pk ed25519.PubKeyEd25519
-		copy(pk[:], app.proposer.PubKey.Data)
-		pubKey := ttypes.PubKey{pk}
-		stake.SlashBadProposer(pubKey, app.blockTime, app.WorkingHeight())
 	} else {
 		if app.deliverSqlTx != nil {
 			// Commit transaction
@@ -395,7 +290,6 @@ func (app *BaseApp) Commit() (res abci.ResponseCommit) {
 			if err != nil {
 				panic(err)
 			}
-			stake.ResetDeliverSqlTx()
 			governance.ResetDeliverSqlTx()
 		}
 	}
@@ -429,14 +323,3 @@ func finalAppHash(ethCommitHash []byte, travisCommitHash []byte, dbHash []byte, 
 	return hash
 }
 
-func calStakeCheck(height int64) bool {
-	return height%int64(utils.GetParams().CalStakeInterval) == 0
-}
-
-func calVPCheck(height int64) bool {
-	return height == 1 || height%int64(utils.GetParams().CalVPInterval) == 0
-}
-
-func calAvgStakingDateCheck(height int64) bool {
-	return height%int64(utils.GetParams().CalAverageStakingDateInterval) == 0
-}
