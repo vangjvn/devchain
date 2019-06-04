@@ -126,138 +126,6 @@ describe("Concurrent Test", function() {
     })
   })
 
-  describe("Stake: SetCompRate", function() {
-    before(function(done) {
-      // clear all balance of A
-      let balance = web3.cmt.getBalance(A, "latest")
-      if (balance > 0) Utils.transfer(A, C, balance)
-      Utils.waitBlocks(done, 1)
-    })
-    describe("A send 2 requests at the same time", function() {
-      it("if A don't have enough CMTs, fail", function(done) {
-        multiSetCompRate((err, res) => {
-          expect(res.length).to.equal(2)
-          for (let i = 0; i < TIMES; ++i) {
-            Utils.expectTxFail(res[i])
-          }
-          done()
-        })
-      })
-      it("if A has only gas fee for one tx", function(done) {
-        Utils.transfer(C, A, Utils.gasFee("setCompRate"), Globals.Params.gas_price)
-        Utils.waitBlocks(done, 1)
-      })
-      it("one of the 2 requests will fail", function(done) {
-        multiSetCompRate((err, res) => {
-          logger.debug(res)
-          expect(res.length).to.equal(TIMES)
-          expect(
-            (res[1].height > 0 && (res[0].height == 0 || res[0].deliver_tx.code > 0)) ||
-              (res[0].height > 0 && (res[1].height == 0 || res[1].deliver_tx.code > 0))
-          ).to.be.true
-          done()
-        })
-      })
-    })
-  })
-
-  describe("Stake: Delegator Withdraw", function() {
-    describe("B send 2 requests at the same time", function() {
-      before(function(done) {
-        // clear all balance of B
-        let balance = web3.cmt.getBalance(B, "latest")
-        if (balance > 0) Utils.transfer(B, C, balance)
-        Utils.waitBlocks(done, 1)
-      })
-      before(function(done) {
-        // make balance of B = CMT1
-        Utils.transfer(C, B, CMT1, Globals.Params.gas_price)
-        Utils.waitBlocks(done, 1)
-      })
-      before(function(done) {
-        // B delegate CMT1 to A
-        Utils.delegatorAccept(B, A, CMT1)
-        Utils.waitBlocks(done, 1)
-      })
-      it("one of the 2 requests will fail", function(done) {
-        multiDeleWithdraw((err, res) => {
-          logger.debug(res)
-          expect(res.length).to.equal(TIMES)
-          expect(
-            (res[1].height > 0 && (res[0].height == 0 || res[0].deliver_tx.code > 0)) ||
-              (res[0].height > 0 && (res[1].height == 0 || res[1].deliver_tx.code > 0))
-          ).to.be.true
-          done()
-        })
-      })
-    })
-  })
-
-  describe("Stake: Delegator Accept from one account", function() {
-    before(function(done) {
-      // clear all balance of B
-      let balance = web3.cmt.getBalance(B, "latest")
-      if (balance > 0) Utils.transfer(B, C, balance)
-      Utils.waitBlocks(done, 1)
-    })
-    describe("B Send 2 requests at the same time", function() {
-      it("if B don't have enough CMTs, fail", function(done) {
-        multiDeleAccept(CMT1, (err, res) => {
-          expect(res.length).to.equal(2)
-          for (let i = 0; i < TIMES; ++i) {
-            Utils.expectTxFail(res[i])
-          }
-          done()
-        })
-      })
-      it("if B has CMTs for only one tx", function(done) {
-        Utils.transfer(C, B, CMT1, Globals.Params.gas_price)
-        Utils.waitBlocks(done, 1)
-      })
-      it("one of the 2 requests will fail", function(done) {
-        multiDeleAccept(CMT1, (err, res) => {
-          logger.debug(res)
-          expect(res.length).to.equal(TIMES)
-          expect(
-            (res[1].height > 0 && (res[0].height == 0 || res[0].deliver_tx.code > 0)) ||
-              (res[0].height > 0 && (res[1].height == 0 || res[1].deliver_tx.code > 0))
-          ).to.be.true
-          done()
-        })
-      })
-    })
-  })
-
-  describe("Stake: Delegator Accept from two account", function() {
-    let deleAmount
-    before(function() {
-      let r = web3.cmt.stake.validator.query(A)
-      deleAmount = web3
-        .toBigNumber(r.data.max_shares)
-        .minus(r.data.shares)
-        .dividedToIntegerBy(2)
-        .plus(1)
-        .toString(10)
-    })
-    describe("B and C delegate >1/2 shares left on A at the same time", function() {
-      it("one of the 2 requests will fail", function(done) {
-        let nonceB = web3.cmt.getTransactionCount(B)
-        let nonceC = web3.cmt.getTransactionCount(C)
-        let arr = [{ from: B, nonce: nonceB, deleAmount }, { from: C, nonce: nonceC, deleAmount }]
-
-        async.map(arr, deleAccept, (err, res) => {
-          logger.debug(res)
-          expect(res.length).to.equal(2)
-          expect(
-            (res[1].height > 0 && (res[0].height == 0 || res[0].deliver_tx.code > 0)) ||
-              (res[0].height > 0 && (res[1].height == 0 || res[1].deliver_tx.code > 0))
-          ).to.be.true
-          done()
-        })
-      })
-    })
-  })
-
   describe("Stake: DeclareCandidacy", function() {
     before(function() {
       V = web3.personal.newAccount(Settings.Passphrase)
@@ -334,46 +202,6 @@ const multiUpdateCandidacy = callback => {
   )
 }
 
-const multiDeleWithdraw = callback => {
-  let nonce = web3.cmt.getTransactionCount(B)
-  let arr = [nonce, nonce + 1]
-  async.map(
-    arr,
-    (nonce, cb) => {
-      let payload = {
-        from: B,
-        validatorAddress: A,
-        amount: CMT1,
-        nonce: "0x" + nonce.toString(16)
-      }
-      logger.debug(payload)
-      web3.cmt.stake.delegator.withdraw(payload, cb)
-    },
-    callback
-  )
-}
-
-const multiDeleAccept = (amount, callback) => {
-  let nonce = web3.cmt.getTransactionCount(B)
-  let arr = [nonce, nonce + 1]
-  async.map(
-    arr,
-    (nonce, cb) => {
-      let payload = {
-        from: B,
-        validatorAddress: A,
-        amount: amount.toString(10),
-        cubeBatch: Globals.CubeBatch,
-        sig: Utils.cubeSign(B, nonce),
-        nonce: "0x" + nonce.toString(16)
-      }
-      logger.debug(payload)
-      web3.cmt.stake.delegator.accept(payload, cb)
-    },
-    callback
-  )
-}
-
 const multiDeclareCandidacy = callback => {
   let nonce = web3.cmt.getTransactionCount(V)
   let arr = [nonce, nonce + 1]
@@ -384,8 +212,6 @@ const multiDeclareCandidacy = callback => {
       let payload = {
         from: V,
         pubKey: pubKey,
-        maxAmount: "0x64",
-        compRate: "0.2",
         nonce: "0x" + nonce.toString(16)
       }
       logger.debug(payload)
@@ -395,39 +221,3 @@ const multiDeclareCandidacy = callback => {
   )
 }
 
-var deleAccept = (obj, cb) => {
-  let from = obj.from
-  let nonce = obj.nonce
-  let deleAmount = obj.deleAmount
-  let sig = Utils.cubeSign(from, nonce)
-
-  let payload = {
-    from: from,
-    nonce: "0x" + nonce.toString(16),
-    validatorAddress: A,
-    amount: deleAmount,
-    cubeBatch: Globals.CubeBatch,
-    sig: sig
-  }
-  logger.debug(payload)
-  web3.cmt.stake.delegator.accept(payload, cb)
-}
-
-const multiSetCompRate = callback => {
-  let nonce = web3.cmt.getTransactionCount(A)
-  let arr = [nonce, nonce + 1]
-  async.map(
-    arr,
-    (nonce, cb) => {
-      let payload = {
-        from: A,
-        delegatorAddress: A,
-        nonce: "0x" + nonce.toString(16),
-        compRate: "0.1"
-      }
-      logger.debug(payload)
-      web3.cmt.stake.validator.setCompRate(payload, cb)
-    },
-    callback
-  )
-}

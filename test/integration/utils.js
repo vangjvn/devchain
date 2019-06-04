@@ -102,52 +102,6 @@ const getTokenBalance = () => {
   return balance
 }
 
-const getDelegation = (acc_index, val_index, vals) => {
-  let delegation = {
-    delegate_amount: web3.toBigNumber(0),
-    award_amount: web3.toBigNumber(0),
-    withdraw_amount: web3.toBigNumber(0),
-    pending_withdraw_amount: web3.toBigNumber(0),
-    slash_amount: web3.toBigNumber(0),
-    shares: web3.toBigNumber(0),
-    voting_power: 0,
-    comp_rate: 0
-  }
-  result = web3.cmt.stake.delegator.query(Globals.Accounts[acc_index], 0)
-  if (result && result.data) {
-    let data = result.data.find(
-      d => d.validator_address.toLowerCase() == Globals.Accounts[val_index]
-    )
-    if (data)
-      delegation = {
-        delegate_amount: web3.toBigNumber(data.delegate_amount),
-        award_amount: web3.toBigNumber(data.award_amount),
-        withdraw_amount: web3.toBigNumber(data.withdraw_amount),
-        pending_withdraw_amount: web3.toBigNumber(data.pending_withdraw_amount),
-        slash_amount: web3.toBigNumber(data.slash_amount),
-        voting_power: Number(data.voting_power),
-        comp_rate: eval(data.comp_rate)
-      }
-    delegation.shares = delegation.delegate_amount
-      .plus(delegation.award_amount)
-      .minus(delegation.withdraw_amount)
-      .minus(delegation.pending_withdraw_amount)
-      .minus(delegation.slash_amount)
-  }
-  logger.debug(
-    "delegation: --> ",
-    `delegate_amount: ${delegation.delegate_amount.toString(10)}`,
-    `award_amount: ${delegation.award_amount.toString(10)}`,
-    `withdraw_amount: ${delegation.withdraw_amount.toString(10)}`,
-    `pending_withdraw_amount: ${delegation.pending_withdraw_amount.toString(10)}`,
-    `slash_amount: ${delegation.slash_amount.toString(10)}`,
-    `shares: ${delegation.shares.toString(10)}`,
-    `voting_power: ${delegation.voting_power}`,
-    `comp_rate: ${delegation.comp_rate}`
-  )
-  return delegation
-}
-
 const vote = (proposalId, from, answer) => {
   expect(proposalId).to.not.be.empty
   if (proposalId === "") return
@@ -289,9 +243,6 @@ const gasFee = txType => {
     case "proposeDeployLibEni":
       gasLimit = web3.toBigNumber(Globals.Params.deploy_libeni_proposal_gas)
       break
-    case "setCompRate":
-      gasLimit = web3.toBigNumber(Globals.Params.set_comp_rate_gas)
-      break
     case "updateAccount":
       gasLimit = web3.toBigNumber(Globals.Params.update_candidate_account_gas)
       break
@@ -310,17 +261,13 @@ const addFakeValidators = () => {
     if (valsToAdd > 0) {
       Globals.Accounts.forEach((acc, idx) => {
         if (idx >= valsToAdd) return
-        let initAmount = 100000,
-          compRate = "0.8"
         let payload = {
           from: acc,
           pubKey: Globals.PubKeys[idx],
-          maxAmount: web3.toWei(initAmount, "cmt"),
-          compRate: compRate
         }
         let r = web3.cmt.stake.validator.declare(payload)
         logger.debug(r)
-        logger.debug(`validator ${acc} added, max_amount: ${initAmount} cmt`)
+        logger.debug(`validator ${acc} added`)
       })
     }
   }
@@ -339,88 +286,6 @@ const removeFakeValidators = () => {
       logger.debug(`validator ${acc} removed`)
     })
   }
-}
-
-const getBlockAward = () => {
-  // const inflation_rate = eval(Globals.Params.inflation_rate)
-  // let cmts = web3.toWei(web3.toBigNumber(1000000000), "cmt")
-  // let blocksYr = (365 * 24 * 3600) / 10
-  // let blockAward = cmts.times(inflation_rate / 100).dividedToIntegerBy(blocksYr)
-  let blockAward = web3.toBigNumber("25367833587011669203")
-  return blockAward
-}
-
-// n: number of delegators; s: delegator's current stake
-const calcVotingPower = (n, s, p) => {
-  logger.debug("n,s,p:", n, s, p)
-  // no awards if less than 1000cmt
-  if (parseInt(s / 1e18) < Number(Globals.Params.min_staking_amount)) {
-    return 0
-  }
-
-  let s10 = 1,
-    s90 = 1,
-    t = 1 // simplfied.
-  let r1 = Math.pow(s10 / s90, 2)
-  let r2 = (t / 180 + 1).toFixed(2)
-  let r3 = Math.pow(1 - 1 / (n * 4 + 1), 2)
-  let r4 = parseInt((s / 1e18) * p)
-  let x = r1 * r3 * r4
-  let l = Math.log2(r2)
-  let vp = Math.ceil(l * x)
-  logger.debug("r1,r2,r3,r4,x,l,vp:", r1, r2, r3, r4, x, l, vp)
-  return vp
-}
-
-const delegatorAccept = (delegator, validator, deleAmount) => {
-  let nonce = web3.cmt.getTransactionCount(delegator)
-
-  let payload = {
-    from: delegator,
-    validatorAddress: validator,
-    amount: deleAmount,
-    cubeBatch: Globals.CubeBatch,
-    sig: cubeSign(delegator, nonce)
-  }
-  let r = web3.cmt.stake.delegator.accept(payload)
-  expectTxSuccess(r)
-}
-
-const crypto = require("crypto")
-// this private key is for testing only, use it together with cubeBatch "01"
-const privateKey = `-----BEGIN RSA PRIVATE KEY-----
-MIICXQIBAAKBgQCiWpvDnwYFTqgSWPlA3VO8u+Yv9r8QGlRaYZFszUZEXUQxquGl
-FexMSVyFeqYjIokfPOEHHx2voqWgi3FKKlp6dkxwApP3T22y7Epqvtr+EfNybRta
-15snccZy47dY4UcmYxbGWFTaL66tz22pCAbjFrxY3IxaPPIjDX+FiXdJWwIDAQAB
-AoGAOc63XYz20Nbz4yyI+36S/UWOLY/W8f3eARxycmIY3eizilfE5koLDBKm/ePw
-2dvHJTdBDI8Yu9vWy3Y7DWRNOHJKdcc1gGCR36cJFc4/h02zdaK+CK4eAaZLXhdK
-H8DljEx6QAeRtxVLZGeYa4actY+3GeujYvkQ5QwNprchTSECQQDO4VMmLB+iIT/N
-jnADYOuWKe3iLBoTKHmVfAaTRMMeHATMkpgyVzTLO7jMYCWy7+S0DL4wDNUTQv+P
-Nna/hrAxAkEAyObfMAgjnW6s+CGoN+yWtdBC0LvDXDrzaT3KqmHxK2iCg2kQ9R6P
-0vCvGJytuPxmIVZn54+KpKfR6ok6RJSbSwJAF+CRxDobfI7x2juyWfF5v18fgZct
-e0CUp9gkuiKZkoQRWbshrc263ioKbiw6rahacR13ZfxVK1/0NwdGNVzKQQJBAJpw
-QGpgF2DSz8z/sp0rFsA1lOd5L7ka6Dui8MUB/a9s68exYQPNtqpls3SsHS/zd19x
-WPa9dcsV51zwmQZXZvkCQQChnQLBs6BbH6O85ePXSSbe7RUvHua6EEkmCNkIw+vT
-3Jqmk4ecxCzmEv3xbzrCdgOhfjxqjrsqLLK6BH+lJsWS
------END RSA PRIVATE KEY-----`
-
-const cubeSign = (address, nonce) => {
-  let message = address + "|" + nonce
-
-  let hash = crypto
-    .createHash("sha256")
-    .update(message)
-    .digest("hex")
-  let signature = crypto.privateDecrypt(
-    {
-      key: privateKey,
-      padding: crypto.constants.RSA_NO_PADDING
-    },
-    new Buffer(hash, "hex")
-  )
-  let signature_hex = signature.toString("hex")
-  logger.debug("cube sig: ", signature_hex)
-  return signature_hex
 }
 
 const getTMValidators = cb => {
@@ -445,7 +310,6 @@ module.exports = {
   tokenTransfer,
   tokenKill,
   getTokenBalance,
-  getDelegation,
   vote,
   getProposal,
   waitInterval,
@@ -456,9 +320,5 @@ module.exports = {
   gasFee,
   addFakeValidators,
   removeFakeValidators,
-  delegatorAccept,
-  cubeSign,
-  calcVotingPower,
-  getBlockAward,
   getTMValidators
 }

@@ -67,59 +67,12 @@ describe("API Input Parameter Test", function() {
       sendTx(D, "declare", [], Utils.expectTxFail, done)
     })
     it("fail if bad pub key", function(done) {
-      sendTx(D, "declare", ["abc", "11", "0.15"], Utils.expectTxFail, done)
-    })
-    it("fail if no max_amount specified", function(done) {
-      sendTx(D, "declare", [Globals.PubKeys[3]], Utils.expectTxFail, done)
-    })
-    it("fail if bad max_amount format", function(done) {
-      sendTx(D, "declare", [Globals.PubKeys[3], "A"], Utils.expectTxFail, done)
-    })
-    it("fail if max_amount<=0", function(done) {
-      sendTx(D, "declare", [Globals.PubKeys[3], "-1"], Utils.expectTxFail, done)
-    })
-    it("fail if no comp_rate specified", function(done) {
-      sendTx(D, "declare", [Globals.PubKeys[3], "1"], Utils.expectTxFail, done)
-    })
-    it("fail if bad comp_rate format", function(done) {
-      sendTx(D, "declare", [Globals.PubKeys[3], "11", "a"], Utils.expectTxFail, done)
-    })
-    it("fail if wrong comp_rate scope", function(done) {
-      sendTx(D, "declare", [Globals.PubKeys[3], "11", "-1"], Utils.expectTxFail, done)
+      sendTx(D, "declare", ["abc"], Utils.expectTxFail, done)
     })
   })
   describe("stake/updateCandidacy", function() {
     it("success if empty input(nothing changed)", function(done) {
       sendTx(A, "update", [], Utils.expectTxSuccess, done)
-    })
-    it("fail if max_amount<=0", function(done) {
-      sendTx(A, "update", ["-1"], Utils.expectTxFail, done)
-    })
-    it("fail if bad max_amount format", function(done) {
-      sendTx(A, "update", ["A"], Utils.expectTxFail, done)
-    })
-  })
-  describe("stake/setComprate", function() {
-    it("fail if empty input", function(done) {
-      sendTx(A, "compRate", [], Utils.expectTxFail, done)
-    })
-    it("fail if bad validator", function(done) {
-      sendTx(D, "compRate", [A.addr, "0.1"], Utils.expectTxFail, done)
-    })
-    it("fail if bad delegator", function(done) {
-      sendTx(A, "compRate", [C.addr, "0.1"], Utils.expectTxFail, done)
-    })
-    it("fail if no comp_rate specified", function(done) {
-      sendTx(A, "compRate", [A.addr], Utils.expectTxFail, done)
-    })
-    it("fail if bad comp_rate format", function(done) {
-      sendTx(A, "compRate", [A.addr, "A"], Utils.expectTxFail, done)
-    })
-    it("fail if wrong comp_rate scope", function(done) {
-      sendTx(A, "compRate", [A.addr, "-1"], Utils.expectTxFail, done)
-    })
-    it("success if all set", function(done) {
-      sendTx(A, "compRate", [A.addr, "0.1"], Utils.expectTxSuccess, done)
     })
   })
   describe("stake/verify", function() {
@@ -137,45 +90,6 @@ describe("API Input Parameter Test", function() {
     })
     it("success if no verifed specified(default to false)", function(done) {
       sendTx(A, "verify", [A.addr], Utils.expectTxSuccess, done)
-    })
-  })
-  describe("stake/accept", function() {
-    it("fail if empty input", function(done) {
-      sendTx(D, "accept", [], Utils.expectTxFail, done)
-    })
-    it("fail if bad cube batch", function(done) {
-      sendTx(D, "accept", [A.addr, "10", "AA"], Utils.expectTxFail, done)
-    })
-    it("fail if bad amount format", function(done) {
-      sendTx(D, "accept", [A.addr, "A", "01"], Utils.expectTxFail, done)
-    })
-    it("fail if amount<=0", function(done) {
-      sendTx(D, "accept", [A.addr, "-1", "01"], Utils.expectTxFail, done)
-    })
-  })
-  describe("stake/withdraw", function() {
-    before(function(done) {
-      let balance = web3.cmt.getBalance(D.addr)
-      if (balance < 1) Utils.transfer(A.addr, D.addr, 1)
-      sendTx(D, "accept", [A.addr, "1", "01"], Utils.expectTxSuccess, done)
-    })
-    it("fail if empty input", function(done) {
-      sendTx(D, "withdraw", [], Utils.expectTxFail, done)
-    })
-    it("fail if bad validator", function(done) {
-      sendTx(D, "withdraw", [D.addr], Utils.expectTxFail, done)
-    })
-    it("fail if bad amount format", function(done) {
-      sendTx(D, "withdraw", [A.addr, "A"], Utils.expectTxFail, done)
-    })
-    it("fail if amount<=0", function(done) {
-      sendTx(D, "withdraw", [A.addr, "-1"], Utils.expectTxFail, done)
-    })
-    it("fail if bad delegator", function(done) {
-      sendTx(C, "withdraw", [A.addr, "1"], Utils.expectTxFail, done)
-    })
-    it("success if all set", function(done) {
-      sendTx(D, "withdraw", [A.addr, "1"], Utils.expectTxSuccess, done)
     })
   })
   describe("gov/transFund", function() {
@@ -267,17 +181,11 @@ function sendTx(account, op, data, fnExpect, done) {
     case "declare":
       txInner = {
         type: "stake/declareCandidacy",
-        data: { pub_key: data[0], max_amount: data[1], comp_rate: data[2] }
+        data: { pub_key: data[0] }
       }
       break
     case "update":
-      txInner = { type: "stake/updateCandidacy", data: { max_amount: data[0] } }
-      break
-    case "compRate":
-      txInner = {
-        type: "stake/setCompRate",
-        data: { delegator_address: data[0], comp_rate: data[1] }
-      }
+      txInner = { type: "stake/updateCandidacy", data: {} }
       break
     case "verify":
       txInner = {
@@ -290,23 +198,6 @@ function sendTx(account, op, data, fnExpect, done) {
       break
     case "activate":
       txInner = { type: "stake/activateCandidacy", data: {} }
-      break
-    case "accept":
-      txInner = {
-        type: "stake/delegate",
-        data: {
-          validator_address: data[0],
-          amount: data[1],
-          cube_batch: data[2],
-          sig: Utils.cubeSign(account.addr, nonce)
-        }
-      }
-      break
-    case "withdraw":
-      txInner = {
-        type: "stake/withdraw",
-        data: { validator_address: data[0], amount: data[1] }
-      }
       break
     case "transFund":
       txInner = {
