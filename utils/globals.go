@@ -4,17 +4,14 @@ import (
 	"math"
 	"math/big"
 
-	"github.com/second-state/devchain/sdk"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/second-state/devchain/sdk"
 )
 
 const (
-	CommitSeconds       = 10
-	HalfYear            = 180
-	YearlyBlockNumber   = 365 * 24 * 3600 / CommitSeconds
-	BasicMintableAmount = "1000000000000000000000000000"
-	DB_FILE_NAME        = "cybermiles.db"
+	CommitSeconds = 10
+	DB_FILE_NAME  = "ss.db"
 )
 
 const (

@@ -26,7 +26,7 @@ func QueryCandidateByAddress(address common.Address) *Candidate {
 
 func queryCandidates(db *sql.DB, cond map[string]interface{}) (candidates Candidates) {
 	clause, params := buildQueryClause(cond)
-	rows, err := db.Query("select id, pub_key, address, shares, voting_power, pending_voting_power,  max_shares, comp_rate, name, website, location, profile, email, verified, active, block_height, rank, state, num_of_delegators, created_at from candidates"+clause, params...)
+	rows, err := db.Query("select id, pub_key, address, voting_power, name, website, location, profile, email, verified, active, block_height, state, created_at from candidates"+clause, params...)
 	if err != nil {
 		panic(err)
 	}
@@ -34,4 +34,3 @@ func queryCandidates(db *sql.DB, cond map[string]interface{}) (candidates Candid
 	candidates = composeCandidateResults(rows)
 	return
 }
-

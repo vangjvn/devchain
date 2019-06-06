@@ -135,7 +135,7 @@ func getCandidatesInternal(cond map[string]interface{}) (candidates Candidates) 
 	defer txWrapper.Commit()
 
 	clause, params := buildQueryClause(cond)
-	rows, err := txWrapper.tx.Query("select id, pub_key, address, voting_power, name, website, location, profile, email, verified, active, block_height, rank, state, created_at from candidates"+clause, params...)
+	rows, err := txWrapper.tx.Query("select id, pub_key, address, voting_power, name, website, location, profile, email, verified, active, block_height, state, created_at from candidates"+clause, params...)
 	if err != nil {
 		panic(err)
 	}
@@ -161,16 +161,16 @@ func composeCandidateResults(rows *sql.Rows) (candidates Candidates) {
 			Email:    email,
 		}
 		candidate := &Candidate{
-			Id:                 id,
-			PubKey:             pk,
-			OwnerAddress:       address,
-			VotingPower:        votingPower,
-			Description:        description,
-			Verified:           verified,
-			CreatedAt:          createdAt,
-			Active:             active,
-			BlockHeight:        blockHeight,
-			State:              state,
+			Id:           id,
+			PubKey:       pk,
+			OwnerAddress: address,
+			VotingPower:  votingPower,
+			Description:  description,
+			Verified:     verified,
+			CreatedAt:    createdAt,
+			Active:       active,
+			BlockHeight:  blockHeight,
+			State:        state,
 		}
 		candidates = append(candidates, candidate)
 	}
@@ -217,7 +217,7 @@ func updateCandidate(candidate *Candidate) {
 	txWrapper := getSqlTxWrapper()
 	defer txWrapper.Commit()
 
-	stmt, err := txWrapper.tx.Prepare("update candidates set address = ?, shares = ?, voting_power = ?, name =?, website = ?, location = ?, profile = ?, email = ?, verified = ?, active = ?, hash = ?, state = ?, pub_key = ? where id = ?")
+	stmt, err := txWrapper.tx.Prepare("update candidates set address = ?, voting_power = ?, name =?, website = ?, location = ?, profile = ?, email = ?, verified = ?, active = ?, hash = ?, state = ?, pub_key = ? where id = ?")
 	if err != nil {
 		panic(err)
 	}

@@ -30,12 +30,12 @@ import (
 // BaseApp - The ABCI application
 type BaseApp struct {
 	*StoreApp
-	EthApp              *EthermintApplication
-	checkedTx           map[common.Hash]*types.Transaction
-	ethereum            *eth.Ethereum
-	blockTime           int64
-	deliverSqlTx        *sql.Tx
-	proposer            abci.Validator
+	EthApp       *EthermintApplication
+	checkedTx    map[common.Hash]*types.Transaction
+	ethereum     *eth.Ethereum
+	blockTime    int64
+	deliverSqlTx *sql.Tx
+	proposer     abci.Validator
 }
 
 var (
@@ -281,6 +281,7 @@ func (app *BaseApp) Commit() (res abci.ResponseCommit) {
 			if err != nil {
 				panic(err)
 			}
+			stake.ResetDeliverSqlTx()
 			governance.ResetDeliverSqlTx()
 		}
 	} else {
@@ -290,6 +291,7 @@ func (app *BaseApp) Commit() (res abci.ResponseCommit) {
 			if err != nil {
 				panic(err)
 			}
+			stake.ResetDeliverSqlTx()
 			governance.ResetDeliverSqlTx()
 		}
 	}
@@ -322,4 +324,3 @@ func finalAppHash(ethCommitHash []byte, travisCommitHash []byte, dbHash []byte, 
 	hash := hasher.Sum(nil)
 	return hash
 }
-
