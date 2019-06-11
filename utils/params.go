@@ -9,29 +9,29 @@ import (
 )
 
 type Params struct {
-	ProposalExpirePeriod                   uint64  `json:"proposal_expire_period" type:"uint"`
-	DeclareCandidacyGas                    uint64  `json:"declare_candidacy_gas" type:"uint"`
-	UpdateCandidacyGas                     uint64  `json:"update_candidacy_gas" type:"uint"`
-	UpdateCandidateAccountGas              uint64  `json:"update_candidate_account_gas" type:"uint"`
-	AcceptCandidateAccountUpdateRequestGas uint64  `json:"accept_candidate_account_update_request_gas" type:"uint"`
-	TransferFundProposalGas                uint64  `json:"transfer_fund_proposal_gas" type:"uint"`
-	ChangeParamsProposalGas                uint64  `json:"change_params_proposal_gas" type:"uint"`
-	DeployLibEniProposalGas                uint64  `json:"deploy_libeni_proposal_gas" type:"uint"`
-	RetireProgramProposalGas               uint64  `json:"retire_program_proposal_gas" type:"uint"`
-	UpgradeProgramProposalGas              uint64  `json:"upgrade_program_proposal_gas" type:"uint"`
-	GasPrice                               uint64  `json:"gas_price" type:"uint"`
-	LowPriceTxGasLimit                     uint64  `json:"low_price_tx_gas_limit" type:"uint"`
-	LowPriceTxSlotsCap                     int     `json:"low_price_tx_slots_cap" type:"int"`
-	FoundationAddress                      string  `json:"foundation_address"`
+	ProposalExpirePeriod                   uint64 `json:"proposal_expire_period" type:"uint"`
+	DeclareCandidacyGas                    uint64 `json:"declare_candidacy_gas" type:"uint"`
+	UpdateCandidacyGas                     uint64 `json:"update_candidacy_gas" type:"uint"`
+	UpdateCandidateAccountGas              uint64 `json:"update_candidate_account_gas" type:"uint"`
+	AcceptCandidateAccountUpdateRequestGas uint64 `json:"accept_candidate_account_update_request_gas" type:"uint"`
+	TransferFundProposalGas                uint64 `json:"transfer_fund_proposal_gas" type:"uint"`
+	ChangeParamsProposalGas                uint64 `json:"change_params_proposal_gas" type:"uint"`
+	DeployLibEniProposalGas                uint64 `json:"deploy_libeni_proposal_gas" type:"uint"`
+	RetireProgramProposalGas               uint64 `json:"retire_program_proposal_gas" type:"uint"`
+	UpgradeProgramProposalGas              uint64 `json:"upgrade_program_proposal_gas" type:"uint"`
+	GasPrice                               uint64 `json:"gas_price" type:"uint"`
+	LowPriceTxGasLimit                     uint64 `json:"low_price_tx_gas_limit" type:"uint"`
+	LowPriceTxSlotsCap                     int    `json:"low_price_tx_slots_cap" type:"int"`
+	FoundationAddress                      string `json:"foundation_address"`
 }
 
 func DefaultParams() *Params {
 	return &Params{
 		ProposalExpirePeriod:                   7 * 24 * 3600 / CommitSeconds,
-		DeclareCandidacyGas:                    1e6,   // gas setting for declareCandidacy
-		UpdateCandidacyGas:                     1e6,   // gas setting for updateCandidacy
-		UpdateCandidateAccountGas:              1e6,   // gas setting for UpdateCandidateAccountGas
-		AcceptCandidateAccountUpdateRequestGas: 1e6,   // gas setting for AcceptCandidateAccountUpdateRequestGas
+		DeclareCandidacyGas:                    1e6, // gas setting for declareCandidacy
+		UpdateCandidacyGas:                     1e6, // gas setting for updateCandidacy
+		UpdateCandidateAccountGas:              1e6, // gas setting for UpdateCandidateAccountGas
+		AcceptCandidateAccountUpdateRequestGas: 1e6, // gas setting for AcceptCandidateAccountUpdateRequestGas
 		TransferFundProposalGas:                2e6,
 		ChangeParamsProposalGas:                2e6,
 		RetireProgramProposalGas:               2e6,
@@ -40,7 +40,7 @@ func DefaultParams() *Params {
 		GasPrice:                               0,
 		LowPriceTxGasLimit:                     500000, // Maximum gas limit for low-price transaction
 		LowPriceTxSlotsCap:                     100,    // Maximum number of low-price transaction slots per block
-		FoundationAddress:                      "0x0000000000000000000000000000000000000000",
+		FoundationAddress:                      "0x7eff122b94897ea5b0e2a9abf47b86337fafebdc",
 	}
 }
 

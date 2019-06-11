@@ -10,7 +10,7 @@ const { Settings } = require("./constants")
 
 describe("Validator Test", function() {
   let existingValidator = {}
-  let balance_old, balance_new, tx_result
+  let tx_result
   let newAccount, newAccount2
 
   before(function() {
@@ -52,13 +52,15 @@ describe("Validator Test", function() {
       Utils.expectTxFail(tx_result)
     })
 
-    it("Succeeds", function() {
+    it("Succeeds", function(done) {
       let payload = {
         from: Globals.Accounts[3],
         pubKey: Globals.PubKeys[3],
       }
       tx_result = web3.cmt.stake.validator.declare(payload)
       Utils.expectTxSuccess(tx_result)
+      Utils.waitBlocks(done, 2)
+
       // balance after
       // balance_new = Utils.getBalance(3)
       // let gasFee = Utils.gasFee("declareCandidacy")
@@ -68,6 +70,9 @@ describe("Validator Test", function() {
     })
 
     it("5 validators on tendermint", function(done) {
+      before(function(done) {
+        Utils.waitBlocks(done, 3)
+      })
       Utils.getTMValidators((err, res) => {
         expect(err).to.be.null
         expect(res).to.be.not.null
@@ -271,8 +276,6 @@ describe("Validator Test", function() {
     let theAccount
 
     before(function() {
-      // balance before
-      balance_old = Utils.getBalance()
       theAccount = newAccount ? newAccount : Globals.Accounts[3]
     })
 
@@ -291,14 +294,6 @@ describe("Validator Test", function() {
       // check validators restored
       let vals = tx_result.data.filter(d => d.state == "Validator")
       expect(vals.length).to.eq(Globals.Params.max_vals)
-    })
-
-    it("account balance no change", function() {
-      // balance after
-      balance_new = Utils.getBalance()
-      for (i = 1; i < 4; ++i) {
-        expect(balance_new[i].minus(balance_old[i]).toNumber()).to.eq(0)
-      }
     })
 
     it("4 validators on tendermint", function(done) {
