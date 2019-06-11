@@ -111,8 +111,7 @@ describe("Validator Test", function() {
       expect(tx_result.data.owner_address.toLowerCase()).to.eq(Globals.Accounts[3])
       expect(tx_result.data.verified).to.eq("Y")
       expect(tx_result.data.pub_key.value).to.eq(Globals.PubKeys[3])
-      expect(tx_result.data.state).to.not.eq("Validator")
-      delegation_after = Utils.getDelegation(3, 3)
+      expect(tx_result.data.state).to.eq("Validator")
     })
   })
 
@@ -164,7 +163,7 @@ describe("Validator Test", function() {
         tx_result = web3.cmt.stake.validator.query(Globals.Accounts[3], 0)
         expect(tx_result.data.active).to.be.eq("Y")
         expect(tx_result.data.state).to.be.eq("Validator")
-        expect(tx_result.data.voting_power).to.be.gt(1)
+        expect(tx_result.data.voting_power).to.be.eq(1000)
         // expect(tx_result.data.tendermint_voting_power).to.eq(10)
       })
     })
@@ -181,15 +180,8 @@ describe("Validator Test", function() {
         tx_result = web3.cmt.stake.validator.query(Globals.Accounts[2], 0)
         expect(tx_result.data.active).to.be.eq("Y")
         expect(tx_result.data.state).to.be.eq("Validator")
-        expect(tx_result.data.voting_power).to.be.gt(1)
+        expect(tx_result.data.voting_power).to.be.eq(1000)
         // expect(tx_result.data.tendermint_voting_power).to.eq(10)
-      })
-      it("D active=Y, state=Backup Validator, vp>1, tvp=1", function() {
-        tx_result = web3.cmt.stake.validator.query(Globals.Accounts[3], 0)
-        expect(tx_result.data.active).to.be.eq("Y")
-        expect(tx_result.data.state).to.be.eq("Backup Validator")
-        expect(tx_result.data.voting_power).to.be.gt(1)
-        // expect(tx_result.data.tendermint_voting_power).to.be.eq(1)
       })
     })
   })
@@ -264,7 +256,7 @@ describe("Validator Test", function() {
     })
 
     describe("new account accept the update", function() {
-      it("it has enough balance - success", function() {
+      it("succeed", function() {
         let payload = { from: newAccount, accountUpdateRequestId: accountUpdateRequestId }
         tx_result = web3.cmt.stake.validator.acceptAccountUpdate(payload)
         Utils.expectTxSuccess(tx_result)

@@ -408,7 +408,7 @@ func (d deliver) declareGenesisCandidacy(tx TxDeclareCandidacy, val types.Genesi
 		BlockHeight:  d.ctx.BlockHeight(),
 		State:        "Validator",
 	}
-	
+
 	SaveCandidate(candidate)
 	return nil
 }
@@ -480,6 +480,7 @@ func (d deliver) withdrawCandidacy(tx TxWithdrawCandidacy) error {
 		return ErrBadValidatorAddr()
 	}
 
+	candidate.Active = "N"
 	updateCandidate(candidate)
 	return nil
 }
