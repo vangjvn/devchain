@@ -159,7 +159,7 @@ describe("Validator Test", function() {
         Utils.expectTxSuccess(tx_result)
         Utils.waitBlocks(done, 3)
       })
-      it("active=Y, state=Validator, vp>1, tvp=10", function() {
+      it("active=Y, state=Validator, vp>1, tvp=1000", function() {
         tx_result = web3.cmt.stake.validator.query(Globals.Accounts[3], 0)
         expect(tx_result.data.active).to.be.eq("Y")
         expect(tx_result.data.state).to.be.eq("Validator")
@@ -176,7 +176,7 @@ describe("Validator Test", function() {
         Utils.expectTxSuccess(tx_result)
         Utils.waitBlocks(done, 3)
       })
-      it("C active=Y, state=Validator, vp>1, tvp=10", function() {
+      it("C active=Y, state=Validator, vp>1, tvp=1000", function() {
         tx_result = web3.cmt.stake.validator.query(Globals.Accounts[2], 0)
         expect(tx_result.data.active).to.be.eq("Y")
         expect(tx_result.data.state).to.be.eq("Validator")
@@ -285,7 +285,7 @@ describe("Validator Test", function() {
       expect(tx_result.data).to.not.containSubset([{ owner_address: theAccount }])
       // check validators restored
       let vals = tx_result.data.filter(d => d.state == "Validator")
-      expect(vals.length).to.eq(Globals.Params.max_vals)
+      expect(vals.length).to.eq(4)
     })
 
     it("4 validators on tendermint", function(done) {
@@ -294,7 +294,7 @@ describe("Validator Test", function() {
         expect(res).to.be.not.null
         expect(res.result.validators.length).to.eq(4)
         res.result.validators.forEach(v => {
-          expect(Number(v.voting_power)).to.eq(10)
+          expect(Number(v.voting_power)).to.eq(1000)
         })
         done()
       })

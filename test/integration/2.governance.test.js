@@ -65,19 +65,19 @@ describe("Governance Test", function() {
         balance_old = Utils.getBalance()
       })
 
-      it("Validators V propose to double max_slash_blocks. ", function() {
-        tx_result = web3.cmt.governance.proposeChangeParam({
-          from: V,
-          name: "max_slash_blocks",
-          value: (old_params.data.max_slash_blocks * 2).toString()
-        })
-        Utils.expectTxSuccess(tx_result)
-        proposalId = tx_result.deliver_tx.data
-      })
-      it("max_slash_blocks won't change before vote. ", function() {
-        new_params = web3.cmt.governance.getParams()
-        expect(new_params.data.max_slash_blocks).to.equal(old_params.data.max_slash_blocks)
-      })
+      // it("Validators V propose to double max_slash_blocks. ", function() {
+      //   tx_result = web3.cmt.governance.proposeChangeParam({
+      //     from: V,
+      //     name: "max_slash_blocks",
+      //     value: (old_params.data.max_slash_blocks * 2).toString()
+      //   })
+      //   Utils.expectTxSuccess(tx_result)
+      //   proposalId = tx_result.deliver_tx.data
+      // })
+      // it("max_slash_blocks won't change before vote. ", function() {
+      //   new_params = web3.cmt.governance.getParams()
+      //   expect(new_params.data.max_slash_blocks).to.equal(old_params.data.max_slash_blocks)
+      // })
       it("vote the proposal. ", function(done) {
         // vote
         if (Globals.TestMode == "cluster") {
@@ -101,12 +101,12 @@ describe("Governance Test", function() {
           expect(balance_new[4].minus(balance_old[4]).toNumber()).to.eq(-gasFee.toNumber())
         })
       })
-      it("Verify the max_slash_blocks is doubled. ", function() {
-        new_params = web3.cmt.governance.getParams()
-        logger.debug(new_params)
-        expect(new_params.data.max_slash_blocks).to.equal(old_params.data.max_slash_blocks * 2)
-        Globals.Params.max_slash_blocks = old_params.data.max_slash_blocks * 2
-      })
+      // it("Verify the max_slash_blocks is doubled. ", function() {
+      //   new_params = web3.cmt.governance.getParams()
+      //   logger.debug(new_params)
+      //   expect(new_params.data.max_slash_blocks).to.equal(old_params.data.max_slash_blocks * 2)
+      //   Globals.Params.max_slash_blocks = old_params.data.max_slash_blocks * 2
+      // })
     })
 
     describe("Validator V proposes to move 500 CMTs from account #1 to #2. ", function() {

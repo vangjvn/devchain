@@ -30,9 +30,9 @@ yarn install
 # run all test cases
 yarn test
 
-# run test cases in a specified test file(e.g. 1.stake.test.js).
-node_modules/mocha/bin/mocha -t 300000 1.stake.test.js
+# run test cases in a specified test file(e.g. 1.validator.test.js).
+node_modules/mocha/bin/mocha -t 300000 1.validator.test.js
 
 # generate a standalone HTML/CSS report to helps visualize your test runs
-node_modules/mocha/bin/mocha -t 300000 1.stake.test.js --reporter mochawesome
+node_modules/mocha/bin/mocha -t 300000 1.validator.test.js --reporter mochawesome
 ```
