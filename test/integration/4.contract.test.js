@@ -204,7 +204,7 @@ describe("Contract Test", function() {
     })
   })
 
-  describe("Send free ETH TX from A to B 3 times within 10s", function() {
+  describe.skip("Send free ETH TX from A to B 3 times within 10s", function() {
     it("expect only the first one will succeed", function(done) {
       let arrHash = [],
         times = 3
