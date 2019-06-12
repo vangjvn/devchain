@@ -22,7 +22,7 @@ type Params struct {
 	GasPrice                               uint64 `json:"gas_price" type:"uint"`
 	LowPriceTxGasLimit                     uint64 `json:"low_price_tx_gas_limit" type:"uint"`
 	LowPriceTxSlotsCap                     int    `json:"low_price_tx_slots_cap" type:"int"`
-	FoundationAddress                      string `json:"foundation_address"`
+	FoundationAddress                      string `json:"foundation_address" type:"string"`
 }
 
 func DefaultParams() *Params {
