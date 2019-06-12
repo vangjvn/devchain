@@ -181,7 +181,7 @@ describe("Transaction Test", function() {
         done()
       })
     })
-  })
+  }).skip()
 
   describe("Send fee CMT TX from A to B 3 times within 10s", function() {
     it("expect all to succeed", function(done) {
