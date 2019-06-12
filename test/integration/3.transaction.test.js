@@ -150,7 +150,7 @@ describe("Transaction Test", function() {
     })
   })
 
-  describe("Send free CMT TX from A to B 3 times within 10s", function() {
+  describe.skip("Send free CMT TX from A to B 3 times within 10s", function() {
     it("expect only the first one will succeed", function(done) {
       let arrHash = [],
         times = 3
@@ -181,7 +181,7 @@ describe("Transaction Test", function() {
         done()
       })
     })
-  }).skip()
+  })
 
   describe("Send fee CMT TX from A to B 3 times within 10s", function() {
     it("expect all to succeed", function(done) {
