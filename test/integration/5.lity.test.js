@@ -217,7 +217,7 @@ describe("Lity Test", function() {
         }
       )
     })
-    describe("if the contract address has no balance", function() {
+    describe.skip("if the contract address has no balance", function() {
       before(function() {
         balance_from_old = web3.cmt.getBalance(web3.cmt.defaultAccount)
       })
