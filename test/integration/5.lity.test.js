@@ -199,7 +199,7 @@ describe("Lity Test", function() {
     })
   })
 
-  describe("FreeGas", function() {
+  describe.skip("FreeGas", function() {
     let contractInstance
     let balance_from_old, balance_contract_old, balance_from_new, balance_contract_new
     let defaultGasPrice = web3.toWei(2, "gwei")
@@ -217,7 +217,7 @@ describe("Lity Test", function() {
         }
       )
     })
-    describe.skip("if the contract address has no balance", function() {
+    describe("if the contract address has no balance", function() {
       before(function() {
         balance_from_old = web3.cmt.getBalance(web3.cmt.defaultAccount)
       })
