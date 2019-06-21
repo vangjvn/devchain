@@ -64,13 +64,21 @@ First, you need to initialize the configurations and settings on each of the nod
 
   $ devchain node init --home $HOME/.devchain
 
-Each node has a different `$HOME/.devchain/config/priv_validator.json` key file. Note down the public key for each of them.
+* Each node has a different `$HOME/.devchain/config/priv_validator.json` key file. Note down the public key for each of them.
+* On each node, run command `devchain node show_node_id --home $HOME/.devchain` and note down the seed for each. It is in the format of `seed@ip:26656`
 
-Now, use `this tool <https://github.com/second-state/devchain-config>`_ to generate a new set of `genesis.json` and `config.toml` files for the entire cluster. Enter all the public keys from the last step into the tool. For example, here is how to create a `genesis.json` with a custom `chain_id`, a customer `gas_price` and public keys from mutiple nodes.
+Next, use `this tool <https://github.com/second-state/devchain-config>`_ to generate a new set of `genesis.json` and `config.toml` files for the entire cluster. Enter all the public keys and seeds from the last step into the tool. For example, here is how to create a `genesis.json` with a custom `chain_id`, a customer `gas_price` and public keys from mutiple nodes.
 
 .. code:: bash
 
-  $ node devchain_cli.js --genesis_config=./genesis.json.template --chain_id=test --params.gas_price=0 --validators.1.pub_key=test1 --validators.1.power=101 --validators.2.pub_key=test2 --validators.1.power=102
+  $ node index.js --type genesis --config_path ./genesis.json.template --chain_id test --params.gas_price 0 --validators.1.pub_key test1 --validators.1.power 101 --validators.2.pub_key test2 --validators.1.power 102
+
+Here is how to create a `config.toml` file with the seeds.
+
+.. code:: bash
+
+  $ node index.js --type config --config_path ./config.toml.template --p2p.seeds seed1@ip1:26656,seed2@ip2:26656
+
 
 Copy the generated `genesis.json` and `config.toml` files back into each node's `$HOME/.devchain/config` directory.
 
