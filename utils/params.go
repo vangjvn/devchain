@@ -20,7 +20,7 @@ type Params struct {
 	RetireProgramProposalGas               uint64 `json:"retire_program_proposal_gas" type:"uint"`
 	UpgradeProgramProposalGas              uint64 `json:"upgrade_program_proposal_gas" type:"uint"`
 	GasPrice                               uint64 `json:"gas_price" type:"uint"`
-	LowPriceTxGasLimit                     uint64 `json:"low_price_tx_gas_limit" type:"uint64"`
+	LowPriceTxGasLimit                     uint64 `json:"low_price_tx_gas_limit" type:"uint"`
 	LowPriceTxSlotsCap                     int    `json:"low_price_tx_slots_cap" type:"int"`
 	FoundationAddress                      string `json:"foundation_address" type:"string"`
 }
@@ -38,8 +38,8 @@ func DefaultParams() *Params {
 		UpgradeProgramProposalGas:              2e6,
 		DeployLibEniProposalGas:                2e6,
 		GasPrice:                               0,
-		LowPriceTxGasLimit:                     UINT64_MAX, // Maximum gas limit for low-price transaction
-		LowPriceTxSlotsCap:                     INT_MAX,    // Maximum number of low-price transaction slots per block
+		LowPriceTxGasLimit:                     9223372036854775807, // Maximum gas limit for low-price transaction
+		LowPriceTxSlotsCap:                     9223372036854775807, // Maximum number of low-price transaction slots per block
 		FoundationAddress:                      "0x7eff122b94897ea5b0e2a9abf47b86337fafebdc",
 	}
 }
