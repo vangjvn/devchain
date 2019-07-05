@@ -111,16 +111,16 @@ describe("API Input Parameter Test", function() {
       sendTx(A, "changeParam", [], Utils.expectTxFail, done)
     })
     it("fail if bad format", function(done) {
-      sendTx(A, "changeParam", ["max_vals", "A"], Utils.expectTxFail, done)
+      sendTx(A, "changeParam", ["gas_price", "A"], Utils.expectTxFail, done)
     })
     it("fail if bad expire timestamp", function(done) {
-      sendTx(A, "changeParam", ["max_vals", "4", null, -1], Utils.expectTxFail, done)
+      sendTx(A, "changeParam", ["gas_price", "1", null, -1], Utils.expectTxFail, done)
     })
     it("fail if bad expire block", function(done) {
-      sendTx(A, "changeParam", ["max_vals", "4", null, null, -1], Utils.expectTxFail, done)
+      sendTx(A, "changeParam", ["gas_price", "1", null, null, -1], Utils.expectTxFail, done)
     })
     it("success if all set", function(done) {
-      sendTx(A, "changeParam", ["max_vals", "4"], Utils.expectTxSuccess, done)
+      sendTx(A, "changeParam", ["gas_price", "1"], Utils.expectTxSuccess, done)
     })
   })
   describe("gov/deployLibEni", function() {
