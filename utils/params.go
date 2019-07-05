@@ -20,7 +20,7 @@ type Params struct {
 	RetireProgramProposalGas               uint64 `json:"retire_program_proposal_gas" type:"uint"`
 	UpgradeProgramProposalGas              uint64 `json:"upgrade_program_proposal_gas" type:"uint"`
 	GasPrice                               uint64 `json:"gas_price" type:"uint"`
-	LowPriceTxGasLimit                     uint64 `json:"low_price_tx_gas_limit" type:"uint"`
+	LowPriceTxGasLimit                     uint64 `json:"low_price_tx_gas_limit" type:"uint64"`
 	LowPriceTxSlotsCap                     int    `json:"low_price_tx_slots_cap" type:"int"`
 	FoundationAddress                      string `json:"foundation_address" type:"string"`
 }
