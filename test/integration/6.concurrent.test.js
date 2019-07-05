@@ -77,7 +77,7 @@ describe("Concurrent Test", function() {
         )
         Utils.waitBlocks(done, 1)
       })
-      it("one of the 2 requests will fail", function(done) {
+      it.skip("one of the 2 requests will fail", function(done) {
         multiTransFund((err, res) => {
           logger.debug(res)
           expect(res.length).to.equal(TIMES)
