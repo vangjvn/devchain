@@ -9,8 +9,8 @@ import (
 
 	"github.com/spf13/viper"
 
-	"github.com/second-state/devchain/utils"
 	"github.com/ethereum/go-ethereum/node"
+	"github.com/second-state/devchain/utils"
 	tmcfg "github.com/tendermint/tendermint/config"
 	cmn "github.com/tendermint/tendermint/libs/common"
 )
@@ -138,7 +138,7 @@ func ensureRoot(conf *TravisConfig) {
 	// Write default config file if missing.
 	if !cmn.FileExists(configFilePath) {
 		// override some defaults
-		conf.TMConfig.Consensus.TimeoutCommit = 10000
+		conf.TMConfig.Consensus.TimeoutCommit = 1000
 		//conf.TMConfig.LogLevel = "app:debug,*:error"
 		//conf.TMConfig.Consensus.MaxBlockSizeTxs = 50000
 		// write config file

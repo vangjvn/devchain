@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	CommitSeconds = 10
+	CommitSeconds = 1
 	DB_FILE_NAME  = "ss.db"
 	//UINT64_MIN    = 0
 	//UINT64_MAX    = ^uint64(0)
