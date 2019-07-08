@@ -69,7 +69,7 @@ describe("Lity Test", function() {
     })
   })
   describe("ProposeDeployLibEni", function() {
-    const EXPIRE_BLOCKS = 5
+    const EXPIRE_BLOCKS = 10
     let proposalId = ""
     let balance_old, balance_new, tx_result
     let expireBlocks
