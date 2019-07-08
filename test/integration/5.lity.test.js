@@ -138,7 +138,7 @@ describe("Lity Test", function() {
         Utils.expectTxFail(tx_result)
       })
       it("Wait for serveral blocks.", function(done) {
-        Utils.waitBlocks(done, expireBlocks - web3.cmt.blockNumber + 1)
+        Utils.waitBlocks(done, expireBlocks - web3.cmt.blockNumber + 5)
       })
 
       it.skip("The library has been deployed. ", function() {
