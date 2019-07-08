@@ -4,6 +4,7 @@ const expect = chai.expect
 const logger = require("./logger")
 const Utils = require("./global_hooks")
 const Globals = require("./global_vars")
+const { Settings } = require("./constants")
 
 let V = web3.cmt.defaultAccount
 describe("Governance Test", function() {
@@ -163,7 +164,7 @@ describe("Governance Test", function() {
             Utils.vote(proposalId, Globals.Accounts[1], "Y")
             Utils.vote(proposalId, Globals.Accounts[2], "Y")
           }
-          Utils.waitBlocks(done, 1)
+          Utils.waitBlocks(done, 2)
         })
         it("Verify that the 500 CMTs are transfered to account #2. ", function() {
           // check proposal
@@ -234,7 +235,7 @@ describe("Governance Test", function() {
           } else {
             Utils.vote(proposalId, V, "N")
           }
-          Utils.waitBlocks(done, 1)
+          Utils.waitBlocks(done, 2)
         })
         it("Verify that the 500 CMTs are transfered back to account #1. ", function() {
           // check proposal
@@ -255,7 +256,7 @@ describe("Governance Test", function() {
       })
       it("Verify that 500 CMTs are removed from account #1 and show up as frozen amount for this account. ", function() {
         let amount = web3.toWei(500, "cmt")
-        let expire = web3.cmt.getBlock("latest").timestamp + EXPIRE_BLOCKS * 10
+        let expire = web3.cmt.getBlock("latest").timestamp + EXPIRE_BLOCKS * Settings.IntervalMs / 1000
 
         tx_result = web3.cmt.governance.proposeRecoverFund({
           from: V,
