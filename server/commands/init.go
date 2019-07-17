@@ -78,6 +78,8 @@ func initTendermint() {
 		logger.Info("Generated node key", "path", nodeKeyFile)
 	}
 
+	utils.CommitSeconds = config.TMConfig.Consensus.TimeoutCommit / 1000
+
 	// genesis file
 	genFile := config.TMConfig.GenesisFile()
 	if cmn.FileExists(genFile) {
@@ -89,9 +91,9 @@ func initTendermint() {
 		}
 
 		genDoc.Validators = []types.GenesisValidator{{
-			PubKey:    types.PubKey{privValidator.GetPubKey()},
-			Power:     "1000",
-			Address:   "0x7eff122b94897ea5b0e2a9abf47b86337fafebdc",
+			PubKey:  types.PubKey{privValidator.GetPubKey()},
+			Power:   "1000",
+			Address: "0x7eff122b94897ea5b0e2a9abf47b86337fafebdc",
 		}}
 
 		if err := genDoc.SaveAs(genFile); err != nil {

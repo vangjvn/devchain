@@ -9,9 +9,12 @@ import (
 	"github.com/second-state/devchain/sdk"
 )
 
-const (
+var (
 	CommitSeconds = 1
-	DB_FILE_NAME  = "ss.db"
+)
+
+const (
+	DB_FILE_NAME = "ss.db"
 	//UINT64_MIN    = 0
 	//UINT64_MAX    = ^uint64(0)
 	//INT_MAX       = int(^uint(0) >> 1)
@@ -173,7 +176,7 @@ func (p *pendingProposal) ReachMin(timestamp, blockHeight int64) (pids []string)
 }
 
 func shouldBePacked(timestamp, lastTs int64) bool {
-	if timestamp < lastTs || timestamp-lastTs < CommitSeconds {
+	if timestamp < lastTs || timestamp-lastTs < int64(CommitSeconds) {
 		return true
 	}
 	return false

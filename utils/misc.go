@@ -3,8 +3,8 @@ package utils
 import (
 	"bytes"
 	"fmt"
-	"github.com/second-state/devchain/sdk"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/second-state/devchain/sdk"
 	"math/big"
 	"strconv"
 	"strings"
@@ -50,9 +50,9 @@ func IsEmptyAddress(address common.Address) bool {
 	return bytes.Equal(emptyAddress, address.Bytes())
 }
 
-func ConvertDaysToHeight(days int64) int64 {
-	return days * 24 * 60 * 60 / CommitSeconds
-}
+//func ConvertDaysToHeight(days int64) int64 {
+//	return days * 24 * 60 * 60 / CommitSeconds
+//}
 
 func Contains(slice []string, item string) bool {
 	set := make(map[string]struct{}, len(slice))

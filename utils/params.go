@@ -27,7 +27,7 @@ type Params struct {
 
 func DefaultParams() *Params {
 	return &Params{
-		ProposalExpirePeriod:                   7 * 24 * 3600 / CommitSeconds,
+		ProposalExpirePeriod:                   7 * 24 * 3600 / uint64(CommitSeconds),
 		DeclareCandidacyGas:                    1e6, // gas setting for declareCandidacy
 		UpdateCandidacyGas:                     1e6, // gas setting for updateCandidacy
 		UpdateCandidateAccountGas:              1e6, // gas setting for UpdateCandidateAccountGas
