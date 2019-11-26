@@ -39,6 +39,7 @@ RUN apt-get update \
 WORKDIR /app
 ENV ENI_LIBRARY_PATH=/app/lib
 ENV LD_LIBRARY_PATH=/app/lib
+ENV EVMC_LIBRARY_PATH=/app/lib
 
 # add the binary
 COPY --from=build-env /go/src/github.com/second-state/devchain/build/devchain .

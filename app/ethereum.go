@@ -51,7 +51,7 @@ type EthermintApplication struct {
 func NewEthermintApplication(backend *api.Backend,
 	client *rpc.Client, strategy *emtTypes.Strategy) (*EthermintApplication, error) {
 
-	state := backend.ManagedState()
+	state, _ := backend.Ethereum().BlockChain().State()
 	if state == nil {
 		panic("Error getting latest state")
 	}
@@ -59,7 +59,7 @@ func NewEthermintApplication(backend *api.Backend,
 	app := &EthermintApplication{
 		backend:                     backend,
 		rpcClient:                   client,
-		checkTxState:                state.StateDB,
+		checkTxState:                state,
 		strategy:                    strategy,
 		lowPriceCheckTransactions:   make(map[FromTo]struct{}),
 		lowPriceDeliverTransactions: make(map[FromTo]struct{}),
@@ -216,7 +216,7 @@ func (app *EthermintApplication) Commit() (abciTypes.ResponseCommit, error) {
 			Data: blockHash[:],
 		}, err
 	}
-	app.checkTxState = state.StateDB
+	app.checkTxState = state
 
 	app.lowPriceCheckTransactions = make(map[FromTo]struct{})
 	app.lowPriceDeliverTransactions = make(map[FromTo]struct{})
