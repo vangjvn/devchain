@@ -80,7 +80,7 @@ func DefaultEthConfig() eth.Config {
 		if lib, ok := os.LookupEnv("EVMC_LIBRARY"); ok {
 			cfg.EWASMInterpreter = filepath.Join(path, lib)
 		} else {
-			cfg.EWASMInterpreter = filepath.Join(path, "libhera.so")
+			cfg.EWASMInterpreter = filepath.Join(path, "libssvmEVMC.so")
 		}
 		vm.InitEVMCEwasm(cfg.EWASMInterpreter)
 	}
