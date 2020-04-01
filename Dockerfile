@@ -16,7 +16,7 @@ RUN mkdir -p libeni \
   && mkdir -p $LIBENI_PATH && cp libeni/*/lib/* $LIBENI_PATH
 
 # hera
-RUN wget -O /app/lib/libhera.so https://github.com/second-state/devchain/releases/download/devchain-v1.9.2-evmc-v6.3.0/libhera-0.2.0-linux-x86_64.so
+RUN wget -O /app/lib/libssvmEVMC.so https://github.com/second-state/SSVM/releases/download/0.5.0/libssvmEVMC-linux-x86_64.so
 
 # get devchain source code
 WORKDIR /go/src/github.com/second-state/devchain
