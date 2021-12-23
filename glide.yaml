@@ -1,4 +1,4 @@
-package: github.com/second-state/devchain
+package: github.com/vangjvn/devchain
 import:
 - package: github.com/prometheus/client_golang
 #  version: v0.8.0
