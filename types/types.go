@@ -2,7 +2,7 @@ package types
 
 import (
 	"encoding/json"
-	"github.com/second-state/devchain/utils"
+	"github.com/vangjvn/devchain/utils"
 	"reflect"
 )
 
