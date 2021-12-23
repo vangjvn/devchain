@@ -3,8 +3,8 @@ package stake
 import (
 	"github.com/ethereum/go-ethereum/common"
 
-	"github.com/second-state/devchain/sdk"
-	"github.com/second-state/devchain/types"
+	"github.com/vangjvn/devchain/sdk"
+	"github.com/vangjvn/devchain/types"
 )
 
 // Tx
