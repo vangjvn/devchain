@@ -12,7 +12,7 @@ import (
 	"github.com/tendermint/tendermint/lite"
 	rpcclient "github.com/tendermint/tendermint/rpc/client"
 
-	"github.com/second-state/devchain/sdk/client"
+	"github.com/vangjvn/devchain/sdk/client"
 )
 
 var (
