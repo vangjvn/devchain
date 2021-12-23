@@ -18,7 +18,7 @@ import (
 	abciTypes "github.com/tendermint/tendermint/abci/types"
 
 	"github.com/vangjvn/devchain/commons"
-	"github.com/vanjvn/devchain/errors"
+	"github.com/vangjvn/devchain/errors"
 	gov "github.com/vangjvn/devchain/modules/governance"
 	"github.com/vangjvn/devchain/sdk"
 	"github.com/vangjvn/devchain/utils"
