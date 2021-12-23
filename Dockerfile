@@ -16,10 +16,12 @@ RUN mkdir -p libeni \
   && mkdir -p $LIBENI_PATH && cp libeni/*/lib/* $LIBENI_PATH
 
 # hera
-RUN wget -O /app/lib/libssvmEVMC.so https://github.com/second-state/SSVM/releases/download/0.5.0/libssvmEVMC-linux-x86_64.so
+RUN cd $LIBENI_PATH && wget https://github.com/WasmEdge/WasmEdge/releases/download/0.9.0/WasmEdge-0.9.0-ubuntu20.04_amd64.tar.gz \
+  && tar zxvf /app/lib/WasmEdge-0.9.0-ubuntu20.04_amd64.tar.gz \
+  && mv /app/lib/WasmEdge-0.9.0-Linux/lib/libwasmedge_c.so /app/lib/libssvmEVMC.so
 
 # get devchain source code
-WORKDIR /go/src/github.com/second-state/devchain
+WORKDIR /go/src/github.com/vangjvn/devchain
 # copy devchain source code from local
 ADD . .
 
@@ -34,7 +36,7 @@ ADD . .
 RUN ENI_LIB=$LIBENI_PATH make build
 
 # final stage
-FROM ubuntu:16.04
+FROM ubuntu:20.04
 
 RUN apt-get update \
   && apt-get install -y ca-certificates libssl-dev
@@ -45,7 +47,7 @@ ENV LD_LIBRARY_PATH=/app/lib
 ENV EVMC_LIBRARY_PATH=/app/lib
 
 # add the binary
-COPY --from=build-env /go/src/github.com/second-state/devchain/build/devchain .
+COPY --from=build-env /go/src/github.com/vangjvn/devchain/build/devchain .
 COPY --from=build-env /app/lib/* $ENI_LIBRARY_PATH/
 RUN sha256sum devchain > devchain.sha256
 
