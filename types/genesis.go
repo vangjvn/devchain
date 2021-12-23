@@ -3,7 +3,7 @@ package types
 import (
 	"encoding/json"
 	"github.com/pkg/errors"
-	"github.com/second-state/devchain/utils"
+	"github.com/vangjvn/devchain/utils"
 	cmn "github.com/tendermint/tendermint/libs/common"
 	"github.com/tendermint/tendermint/types"
 	"io/ioutil"
