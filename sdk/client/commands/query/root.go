@@ -2,7 +2,7 @@ package query
 
 import (
 	"github.com/spf13/cobra"
-	"github.com/second-state/devchain/sdk/client/commands"
+	"github.com/vangjvn/devchain/sdk/client/commands"
 )
 
 // nolint
