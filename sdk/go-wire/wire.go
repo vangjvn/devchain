@@ -7,7 +7,7 @@ import (
 	"io"
 	"reflect"
 
-	cmn "github.com/second-state/devchain/sdk/go-wire/common"
+	cmn "github.com/vangjvn/devchain/sdk/go-wire/common"
 )
 
 var (
