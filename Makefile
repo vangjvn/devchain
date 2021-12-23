@@ -9,18 +9,18 @@ all: get_vendor_deps install print_logo
 get_vendor_deps: tools
 	glide install
 	@# cannot use ctx (type *"gopkg.in/urfave/cli.v1".Context) as type
-	@# *"github.com/second-state/devchain/vendor/github.com/ethereum/go-ethereum/vendor/gopkg.in/urfave/cli.v1".Context ...
+	@# *"github.com/vangjvn/devchain/vendor/github.com/ethereum/go-ethereum/vendor/gopkg.in/urfave/cli.v1".Context ...
 	@rm -rf vendor/github.com/ethereum/go-ethereum/vendor/gopkg.in/urfave
 
 install:
-	@echo "\n--> Installing the Second State DevChain\n"
+	@echo "\n--> Installing the vangjvn DevChain\n"
 ifeq ($(UNAME), Linux)
 	CGO_LDFLAGS="$(CGO_LDFLAGS)" CGO_LDFLAGS_ALLOW="$(CGO_LDFLAGS_ALLOW)" go install ./cmd/devchain
 endif
 ifeq ($(UNAME), Darwin)
 	CGO_LDFLAGS_ALLOW="$(CGO_LDFLAGS_ALLOW)" go install ./cmd/devchain
 endif
-	@echo "\n\nThe Second State DevChain has successfully installed!"
+	@echo "\n\nThe vangjvn DevChain has successfully installed!"
 
 tools:
 	@echo "--> Installing tools"
@@ -35,7 +35,7 @@ ifeq ($(UNAME), Darwin)
 	CGO_LDFLAGS_ALLOW="$(CGO_LDFLAGS_ALLOW)" go build -o build/devchain ./cmd/devchain
 endif
 
-NAME := secondstate/devchain
+NAME := vangjvn/devchain
 LATEST := ${NAME}:latest
 #GIT_COMMIT := $(shell git rev-parse --short=8 HEAD)
 #IMAGE := ${NAME}:${GIT_COMMIT}
