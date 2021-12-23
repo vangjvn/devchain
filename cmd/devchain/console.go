@@ -9,7 +9,7 @@ import (
 	"github.com/ethereum/go-ethereum/cmd/utils"
 	"github.com/ethereum/go-ethereum/rpc"
 
-	"github.com/second-state/devchain/console"
+	"github.com/vangjvn/devchain/console"
 )
 
 var (
