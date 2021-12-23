@@ -15,7 +15,7 @@ import (
 	rpcClient "github.com/tendermint/tendermint/rpc/client"
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
 
-	"github.com/second-state/devchain/utils"
+	"github.com/vangjvn/devchain/utils"
 )
 
 const defaultGas = 90000
