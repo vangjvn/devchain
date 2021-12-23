@@ -2,16 +2,16 @@ package commands
 
 import (
 	"fmt"
-	"github.com/second-state/devchain/utils"
+	"github.com/vangjvn/devchain/utils"
 	"github.com/spf13/cobra"
 	flag "github.com/spf13/pflag"
 	"github.com/spf13/viper"
 
 	"github.com/ethereum/go-ethereum/common"
 
-	"github.com/second-state/devchain/modules/stake"
-	txcmd "github.com/second-state/devchain/sdk/client/commands/txs"
-	"github.com/second-state/devchain/types"
+	"github.com/vangjvn/devchain/modules/stake"
+	txcmd "github.com/vangjvn/devchain/sdk/client/commands/txs"
+	"github.com/vangjvn/devchain/types"
 )
 
 /*
