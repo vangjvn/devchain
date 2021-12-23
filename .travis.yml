@@ -78,5 +78,5 @@ deploy:
   body: $BODY
   prerelease: $PRE
   on:
-    repo: second-state/devchain
+    repo: vangjvn/devchain
     tags: true
