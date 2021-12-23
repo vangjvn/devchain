@@ -2,7 +2,7 @@ package governance
 
 import (
 	"encoding/json"
-	"github.com/second-state/devchain/types"
+	"github.com/vangjvn/devchain/types"
 	"github.com/ethereum/go-ethereum/common"
 	"golang.org/x/crypto/ripemd160"
 )
