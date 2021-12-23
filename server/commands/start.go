@@ -20,13 +20,13 @@ import (
 	"github.com/tendermint/tendermint/libs/cli"
 	cmn "github.com/tendermint/tendermint/libs/common"
 
-	"github.com/second-state/devchain/app"
-	"github.com/second-state/devchain/modules/stake"
-	"github.com/second-state/devchain/sdk/dbm"
-	"github.com/second-state/devchain/server"
-	"github.com/second-state/devchain/types"
-	"github.com/second-state/devchain/utils"
-	"github.com/second-state/devchain/version"
+	"github.com/vangjvn/devchain/app"
+	"github.com/vangjvn/devchain/modules/stake"
+	"github.com/vangjvn/devchain/sdk/dbm"
+	"github.com/vangjvn/devchain/server"
+	"github.com/vangjvn/devchain/types"
+	"github.com/vangjvn/devchain/utils"
+	"github.com/vangjvn/devchain/version"
 )
 
 const (
