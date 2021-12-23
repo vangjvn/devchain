@@ -1,7 +1,7 @@
 package main
 
 import (
-	basecmd "github.com/second-state/devchain/server/commands"
+	basecmd "github.com/vangjvn/devchain/server/commands"
 	"github.com/spf13/cobra"
 )
 
