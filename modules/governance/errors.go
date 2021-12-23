@@ -4,7 +4,7 @@ package governance
 import (
 	"fmt"
 
-	"github.com/second-state/devchain/sdk/errors"
+	"github.com/vangjvn/devchain/sdk/errors"
 )
 
 var (
