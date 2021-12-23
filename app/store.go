@@ -21,10 +21,10 @@ import (
 	tDB "github.com/tendermint/tendermint/libs/db"
 	"github.com/tendermint/tendermint/libs/log"
 
-	"github.com/second-state/devchain/modules/governance"
-	"github.com/second-state/devchain/sdk/dbm"
-	"github.com/second-state/devchain/sdk/errors"
-	sm "github.com/second-state/devchain/sdk/state"
+	"github.com/vangjvn/devchain/modules/governance"
+	"github.com/vangjvn/devchain/sdk/dbm"
+	"github.com/vangjvn/devchain/sdk/errors"
+	sm "github.com/vangjvn/devchain/sdk/state"
 	"github.com/tendermint/go-amino"
 )
 
