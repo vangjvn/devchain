@@ -2,7 +2,7 @@ package types
 
 import (
 	"bytes"
-	"github.com/second-state/devchain/utils"
+	"github.com/vangjvn/devchain/utils"
 	"math/rand"
 	"sort"
 
