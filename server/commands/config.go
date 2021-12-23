@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/viper"
 
 	"github.com/ethereum/go-ethereum/node"
-	"github.com/second-state/devchain/utils"
+	"github.com/vangjvn/devchain/utils"
 	tmcfg "github.com/tendermint/tendermint/config"
 	cmn "github.com/tendermint/tendermint/libs/common"
 )
