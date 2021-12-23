@@ -17,12 +17,12 @@ import (
 	"github.com/ethereum/go-ethereum/params"
 	abciTypes "github.com/tendermint/tendermint/abci/types"
 
-	"github.com/second-state/devchain/commons"
-	"github.com/second-state/devchain/errors"
-	gov "github.com/second-state/devchain/modules/governance"
-	"github.com/second-state/devchain/sdk"
-	"github.com/second-state/devchain/utils"
-	emtTypes "github.com/second-state/devchain/vm/types"
+	"github.com/vangjvn/devchain/commons"
+	"github.com/vanjvn/devchain/errors"
+	gov "github.com/vangjvn/devchain/modules/governance"
+	"github.com/vangjvn/devchain/sdk"
+	"github.com/vangjvn/devchain/utils"
+	emtTypes "github.com/vangjvn/devchain/vm/types"
 )
 
 //----------------------------------------------------------------------
