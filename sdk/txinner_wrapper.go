@@ -5,7 +5,7 @@
 package sdk
 
 import (
-	"github.com/second-state/devchain/sdk/go-wire/data"
+	"github.com/vangjvn/devchain/sdk/go-wire/data"
 )
 
 // Auto-generated adapters for happily unmarshaling interfaces
