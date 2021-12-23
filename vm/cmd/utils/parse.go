@@ -9,8 +9,8 @@ import (
 
 	"github.com/ethereum/go-ethereum/core"
 
-	gen "github.com/second-state/devchain/misc/genesis"
-	"github.com/second-state/devchain/utils"
+	gen "github.com/vangjvn/devchain/misc/genesis"
+	"github.com/vangjvn/devchain/utils"
 )
 
 var blankGenesis = new(core.Genesis)
