@@ -6,7 +6,7 @@
 # > docker run --rm -v $HOME/.devchain:/devchain -p 26657:26657 -p 8545:8545 secondstate/devchain node start --home /devchain
 
 # build stage
-FROM secondstate/devchain-build AS build-env
+FROM vangjvn/devchain-build AS build-env
 
 # libeni
 ENV LIBENI_PATH=/app/lib
