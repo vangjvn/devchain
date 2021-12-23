@@ -8,12 +8,12 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	ethstat "github.com/ethereum/go-ethereum/core/state"
 
-	"github.com/second-state/devchain/commons"
-	"github.com/second-state/devchain/sdk"
-	"github.com/second-state/devchain/sdk/errors"
-	"github.com/second-state/devchain/sdk/state"
-	"github.com/second-state/devchain/types"
-	"github.com/second-state/devchain/utils"
+	"github.com/vangjvn/devchain/commons"
+	"github.com/vangjvn/devchain/sdk"
+	"github.com/vangjvn/devchain/sdk/errors"
+	"github.com/vangjvn/devchain/sdk/state"
+	"github.com/vangjvn/devchain/types"
+	"github.com/vangjvn/devchain/utils"
 )
 
 // DelegatedProofOfStake - interface to enforce delegation stake
