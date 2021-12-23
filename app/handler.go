@@ -7,12 +7,12 @@ import (
 	ethTypes "github.com/ethereum/go-ethereum/core/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	"github.com/second-state/devchain/modules/governance"
-	"github.com/second-state/devchain/modules/stake"
-	"github.com/second-state/devchain/sdk"
-	"github.com/second-state/devchain/sdk/errors"
-	"github.com/second-state/devchain/sdk/state"
-	"github.com/second-state/devchain/types"
+	"github.com/vangjvn/devchain/modules/governance"
+	"github.com/vangjvn/devchain/modules/stake"
+	"github.com/vangjvn/devchain/sdk"
+	"github.com/vangjvn/devchain/sdk/errors"
+	"github.com/vangjvn/devchain/sdk/state"
+	"github.com/vangjvn/devchain/types"
 )
 
 func (app BaseApp) checkHandler(ctx types.Context, store state.SimpleDB, tx *ethTypes.Transaction) abci.ResponseCheckTx {
