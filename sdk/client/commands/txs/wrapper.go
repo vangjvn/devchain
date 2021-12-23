@@ -3,7 +3,7 @@ package txs
 import (
 	"github.com/spf13/pflag"
 
-	"github.com/second-state/devchain/sdk"
+	"github.com/vangjvn/devchain/sdk"
 )
 
 var (
