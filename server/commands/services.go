@@ -17,11 +17,11 @@ import (
 	pv "github.com/tendermint/tendermint/privval"
 	"github.com/tendermint/tendermint/proxy"
 
-	"github.com/second-state/devchain/api"
-	"github.com/second-state/devchain/app"
-	"github.com/second-state/devchain/vm/cmd/utils"
-	emtUtils "github.com/second-state/devchain/vm/cmd/utils"
-	"github.com/second-state/devchain/vm/ethereum"
+	"github.com/vangjvn/devchain/api"
+	"github.com/vangjvn/devchain/app"
+	"github.com/vangjvn/devchain/vm/cmd/utils"
+	emtUtils "github.com/vangjvn/devchain/vm/cmd/utils"
+	"github.com/vangjvn/devchain/vm/ethereum"
 )
 
 type Services struct {
