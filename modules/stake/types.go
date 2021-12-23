@@ -3,14 +3,14 @@ package stake
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/second-state/devchain/sdk/state"
+	"github.com/vangjvn/devchain/sdk/state"
 	"sort"
 
 	"github.com/ethereum/go-ethereum/common"
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	"github.com/second-state/devchain/types"
-	"github.com/second-state/devchain/utils"
+	"github.com/vangjvn/devchain/types"
+	"github.com/vangjvn/devchain/utils"
 	"github.com/tendermint/tendermint/crypto/ed25519"
 	"golang.org/x/crypto/ripemd160"
 )
