@@ -1,5 +1,5 @@
 # build docker image
-# > docker build -t secondstate/devchain-build -f Dockerfile.build.ubuntu .
+# > docker build -t vangjvn/devchain-build -f Dockerfile.build.ubuntu .
 FROM ubuntu:20.04
 
 RUN apt-get update \
