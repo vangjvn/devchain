@@ -5,8 +5,8 @@ import (
 	"fmt"
 
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/second-state/devchain/sdk/dbm"
-	"github.com/second-state/devchain/types"
+	"github.com/vangjvn/devchain/sdk/dbm"
+	"github.com/vangjvn/devchain/types"
 )
 
 var (
