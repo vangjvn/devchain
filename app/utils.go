@@ -14,7 +14,7 @@ import (
 	"github.com/ethereum/go-ethereum/rlp"
 	abciTypes "github.com/tendermint/tendermint/abci/types"
 
-	"github.com/vanjgvn/devchain/errors"
+	"github.com/vangjvn/devchain/errors"
 	"github.com/vangjvn/devchain/utils"
 )
 
