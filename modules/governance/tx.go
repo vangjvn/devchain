@@ -1,7 +1,7 @@
 package governance
 
 import (
-	"github.com/second-state/devchain/sdk"
+	"github.com/vangjvn/devchain/sdk"
 	"github.com/ethereum/go-ethereum/common"
 )
 
