@@ -10,7 +10,7 @@ import (
 	"sync"
 	"time"
 
-	cmn "github.com/second-state/devchain/sdk/go-wire/common"
+	cmn "github.com//devchain/sdk/go-wire/common"
 )
 
 type TypeInfo struct {
