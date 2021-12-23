@@ -57,7 +57,7 @@ before_deploy:
   - BUILD_TAG=$TRAVIS_TAG make dist
   - |
     if [[ "$TRAVIS_TAG" =~ ^v[0-9]+.[0-9]+.[0-9]+ ]]; then
-      export BODY=https://github.com/second-state/devchain/blob/develop/CHANGELOG.md#${TRAVIS_TAG//.}
+      export BODY=https://github.com/vangjvn/devchain/blob/develop/CHANGELOG.md#${TRAVIS_TAG//.}
       export PRE=false
     elif [[ "$TRAVIS_TAG" =~ ^v ]]; then
       export BODY="release for ${TRAVIS_TAG:1}"
