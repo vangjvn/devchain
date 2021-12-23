@@ -4,7 +4,7 @@ import (
 	"strings"
 
 	"encoding/json"
-	"github.com/second-state/devchain/sdk/errors"
+	"github.com/vangjvn/devchain/sdk/errors"
 )
 
 const maxTxSize = 10240
