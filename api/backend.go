@@ -19,8 +19,8 @@ import (
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
 
 	"github.com/ethereum/go-ethereum/params"
-	"github.com/second-state/devchain/vm/ethereum"
-	emtTypes "github.com/second-state/devchain/vm/types"
+	"github.com/vangjvn/devchain/vm/ethereum"
+	emtTypes "github.com/vangjvn/devchain/vm/types"
 )
 
 //----------------------------------------------------------------------
