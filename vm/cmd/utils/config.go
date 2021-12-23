@@ -11,8 +11,8 @@ import (
 	"github.com/ethereum/go-ethereum/eth"
 	"github.com/ethereum/go-ethereum/node"
 	"github.com/ethereum/go-ethereum/params"
-	"github.com/second-state/devchain/api"
-	"github.com/second-state/devchain/vm/ethereum"
+	"github.com/vangjvn/devchain/api"
+	"github.com/vangjvn/devchain/vm/ethereum"
 	cli "gopkg.in/urfave/cli.v1"
 )
 
