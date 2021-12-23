@@ -2,8 +2,8 @@ package api
 
 import (
 	"math/big"
-	"github.com/second-state/devchain/modules/stake"
-	"github.com/second-state/devchain/utils"
+	"github.com/vangjvn/devchain/modules/stake"
+	"github.com/vangjvn/devchain/utils"
 	"github.com/ethereum/go-ethereum/common"
 	um "github.com/ethereum/go-ethereum/core/vm/umbrella"
 )
