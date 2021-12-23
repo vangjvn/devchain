@@ -27,8 +27,8 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/second-state/devchain/console/jsre"
-	"github.com/second-state/devchain/console/web3ext"
+	"github.com/vangjvn/devchain/console/jsre"
+	"github.com/vangjvn/devchain/console/web3ext"
 	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/mattn/go-colorable"
 	"github.com/peterh/liner"
