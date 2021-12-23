@@ -12,7 +12,7 @@ import (
 	ethUtils "github.com/ethereum/go-ethereum/cmd/utils"
 	"github.com/ethereum/go-ethereum/log"
 
-	"github.com/second-state/devchain/vm/ethereum"
+	"github.com/vangjvn/devchain/vm/ethereum"
 )
 
 // StartNode will start up the node.
