@@ -60,5 +60,5 @@ func init() {
 			}
 		}
 	}
-	log.Fatal("Your os is not supported, for now we only support: \n", SUPPORT_OS)
+	log.Fatal("Your os is not supported, (vj) for now we only support: \n", SUPPORT_OS)
 }
