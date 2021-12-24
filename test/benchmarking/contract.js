@@ -21,7 +21,7 @@ let contractData = contract.new.getData({
 })
 let gasPrice = web3.toWei(2, "gwei")
 let gasPriceHex = web3.toHex(gasPrice)
-let gasLimitHex = web3.toHex(4700000)
+let gasLimitHex = web3.toHex(8193000000) //原先4700000
 
 let nonce = web3.cmt.getTransactionCount(deployAdrress)
 let nonceHex = web3.toHex(nonce)
