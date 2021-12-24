@@ -36,7 +36,7 @@ ADD . .
 RUN ENI_LIB=$LIBENI_PATH make build
 
 # final stage
-FROM ubuntu:20.04
+FROM ubuntu:16.04
 
 RUN apt-get update \
   && apt-get install -y ca-certificates libssl-dev
