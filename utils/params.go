@@ -39,7 +39,7 @@ func DefaultParams() *Params {
 		DeployLibEniProposalGas:                2e6,
 		GasPrice:                               0,
 		LowPriceTxGasLimit:                     9223372036854775807, // Maximum gas limit for low-price transaction
-		LowPriceTxSlotsCap:                     2147483647,          // Maximum number of low-price transaction slots per block
+		LowPriceTxSlotsCap:                     81930000000, //2147483647,          // Maximum number of low-price transaction slots per block
 		FoundationAddress:                      "0x7eff122b94897ea5b0e2a9abf47b86337fafebdc",
 	}
 }
