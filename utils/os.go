@@ -11,7 +11,7 @@ var GOOSDIST string
 var GOOSVERS string
 
 var SUPPORT_OS = map[string][]string {
-	"ubuntu": {"20.04"},
+	"ubuntu": {"16.04"},
 	"centos": {"^7.0"},
 }
 
