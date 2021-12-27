@@ -448,6 +448,6 @@ func newBlockHeader(receiver common.Address, prevBlock *ethTypes.Block) *ethType
 // This is miner strategy, not consensus protocol.
 func calcGasLimit(parent *types.Block) uint64 {
 	// Ethereum average block gasLimit * 1000
-	var gl uint64 = 8192000000 // 8192m
+	var gl uint64 = 81920000000 // 8192m
 	return gl
 }
