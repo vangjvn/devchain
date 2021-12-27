@@ -26,7 +26,7 @@ const (
 var (
 	// GenesisTargetGasLimit is the target gas limit of the Genesis block.
 	// #unstable
-	GenesisTargetGasLimit = big.NewInt(81930000000)
+	GenesisTargetGasLimit = big.NewInt(100000000)
 )
 
 type ethstatsConfig struct {
