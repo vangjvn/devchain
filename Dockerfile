@@ -19,7 +19,8 @@ RUN mkdir -p libeni \
 # RUN cd $LIBENI_PATH && wget https://github.com/WasmEdge/WasmEdge/releases/download/0.9.0/WasmEdge-0.9.0-ubuntu20.04_amd64.tar.gz \
 #   && tar zxvf /app/lib/WasmEdge-0.9.0-ubuntu20.04_amd64.tar.gz \
 #   && mv /app/lib/WasmEdge-0.9.0-Linux/lib/libwasmedge_c.so /app/lib/libssvmEVMC.so
-RUN mv /root/WasmEdge-evmc/build/tools/wasmedge-evmc/libwasmedge-evmc.so /app/lib/libssvmEVMC.so
+RUN cd $LIBENI_PATH && wget https://github.com/second-state/ssvm-evmc/releases/download/evmc6-0.1.1-rc1/libssvm-evmc.so \
+ && mv /app/lib/libssvm-evmc.so /app/lib/libssvmEVMC.so
 
 
 # get devchain source code
